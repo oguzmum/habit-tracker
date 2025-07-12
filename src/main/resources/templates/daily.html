@@ -1,19 +1,19 @@
 <div th:fragment="content">
-
     <h2 th:text="'Date: ' + ${#dates.format(#dates.createNow(), 'dd.MM.yyyy')}">Today</h2>
 
     <ul class="list-unstyled mt-4">
-        <li class="mb-2 d-flex align-items-center">
-            <input type="checkbox" class="form-check-input me-2" id="habit1" />
-            <label for="habit1" class="form-check-label">Habit 1</label>
-        </li>
-        <li class="mb-2 d-flex align-items-center">
-            <input type="checkbox" class="form-check-input me-2" id="habit2" />
-            <label for="habit2" class="form-check-label">Habit 2</label>
-        </li>
-        <li class="d-flex align-items-center">
-            <input type="checkbox" class="form-check-input me-2" id="habit3" />
-            <label for="habit3" class="form-check-label">Habit 3</label>
+        <li th:each="h, stat : ${habits}" class="mb-2 d-flex align-items-center">
+
+            <input type="checkbox"
+                   class="form-check-input me-2"
+                   th:id="'habit' + ${h.id}"
+                   th:checked="${h.completed}"/>
+
+            <label class="form-check-label"
+                   th:for="'habit' + ${h.id}"
+                   th:text="${h.name}">
+                Habit-Name
+            </label>
         </li>
     </ul>
 </div>

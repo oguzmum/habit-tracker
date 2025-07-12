@@ -12,11 +12,14 @@ public class NavigationController {
     * otherwise the page isnt loaded in the main area, but the html page itself opens
     * */
 
+    private HabitController habitController = new HabitController();
+
 
 //    @GetMapping({"/", "/daily", "/home"}) its possible to define multiple :D
     @GetMapping("/")
     public String showDaily(Model model) {
         model.addAttribute("newPage", "daily");
+        habitController.getAllHabits(model);
         return "index";
     }
 
