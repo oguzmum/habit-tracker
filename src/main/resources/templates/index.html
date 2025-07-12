@@ -1,13 +1,47 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Habit Tracker</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.min.css">
-    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
-</head>
-<body class="container py-4">
-<h1>Habit Tracker</h1>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link th:href="@{styles/layout.css}" rel="stylesheet" />
 
-    <a th:href="@{/test}">Go to Testpage</a>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Sidebar -->
+        <aside class="sidebar d-flex flex-column align-items-center py-4">
+    <!--        <div class="avatar rounded-circle border d-flex justify-content-center align-items-center mb-4">-->
+    <!--            <span style="font-size: 2rem;">&#128100;</span>-->
+    <!--        </div>-->
+            <nav class="nav flex-column text-center w-100 gap-3">
+
+                <a class="nav-link" th:href="@{/goals}">Goals</a>
+                <!-- Clicking this link triggers an HTTP GET request to /goals.
+                 Spring’s DispatcherServlet will route that request to
+                 NavigationController#showGoals(), which then returns the appropriate view -->
+                <a class="nav-link" href="#">Habits</a>
+                <a class="nav-link" th:href="@{/goals}">Goals</a>
+                <a class="nav-link" href="#">Categories</a>
+                <hr class="my-2" />
+                <a class="nav-link" th:href="@{/}">Today / Startpage</a>
+                <a class="nav-link" href="#">Week</a>
+            </nav>
+        </aside>
+
+        <!-- main area -->
+        <div class="content-wrapper">
+            <main>
+                <!-- dynamically load new pages in the main content area - see Navigation Controller for handling
+                    with elvis (?:) daily page  is set per default
+                    content is the string that has to be as fragment in the html to be shown in main area
+                -->
+                <div th:replace="~{${newPage} ?: 'daily' :: content}"></div>
+            </main>
+            <!-- hardcoded footer page -->
+            <footer th:replace="~{fragments/footer :: footer}"></footer>
+        </div>
+    </div>
 </body>
 </html>
