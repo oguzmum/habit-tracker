@@ -14,15 +14,5 @@ import java.util.List;
 @RequestMapping("/habits")
 public class HabitController {
 
-    private final List<Habit> dummyHabitData = new ArrayList<>();
 
-    public HabitController() {
-        dummyHabitData.add(new Habit(1, "10 000 Schritte", true));
-        dummyHabitData.add(new Habit(2, "Trainieren", true));
-        dummyHabitData.add(new Habit(3, "Lesen", false));
-    }
-
-    public List<Habit> getAllHabits() {
-        return dummyHabitData;
-    }
 }

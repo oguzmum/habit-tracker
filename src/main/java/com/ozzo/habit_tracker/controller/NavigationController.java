@@ -1,6 +1,7 @@
 package com.ozzo.habit_tracker.controller;
 
 import com.ozzo.habit_tracker.model.Habit;
+import com.ozzo.habit_tracker.service.HabitService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,12 +22,16 @@ public class NavigationController {
     * otherwise the page isnt loaded in the main area, but the html page itself opens
     * */
 
-    private HabitController habitController = new HabitController();
+    private final HabitService habitService;
+
+    public NavigationController(HabitService habitService) {
+        this.habitService = habitService;
+    }
 
     //instead of creating habits in specific calls, load it once and make it available everwhere
     @ModelAttribute("habits")
     List<Habit> habits() {
-        return habitController.getAllHabits();
+        return habitService.findAll();
     }
 
 //    @GetMapping({"/", "/daily", "/home"}) its possible to define multiple :D
