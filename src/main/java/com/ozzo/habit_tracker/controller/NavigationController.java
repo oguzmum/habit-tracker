@@ -31,7 +31,13 @@ public class NavigationController {
     //instead of creating habits in specific calls, load it once and make it available everwhere
     @ModelAttribute("habits")
     List<Habit> habits() {
-        return habitService.findAll();
+        List<Habit> habits = habitService.findAll();
+        //i guess i have to optimize this someday in the future when i have too many habits :D, for now its ok
+        for (Habit h : habits) {
+            boolean doneToday = habitService.isHabitDoneToday(h.getId());
+            h.setCompleted(doneToday);
+        }
+        return habits;
     }
 
 //    @GetMapping({"/", "/daily", "/home"}) its possible to define multiple :D

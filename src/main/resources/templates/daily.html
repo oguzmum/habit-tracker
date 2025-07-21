@@ -7,7 +7,10 @@
             <input type="checkbox"
                    class="form-check-input me-2"
                    th:id="'habit' + ${h.id}"
-                   th:checked="${h.completed}"/>
+                   th:checked="${h.completed}"
+                   th:data-id="${h.id}"
+                   onchange="toggleHabitDone(this)"/>
+
 
             <label class="form-check-label"
                    th:for="'habit' + ${h.id}"

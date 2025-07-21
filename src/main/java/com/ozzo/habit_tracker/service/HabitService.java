@@ -1,28 +1,34 @@
 package com.ozzo.habit_tracker.service;
 
 import com.ozzo.habit_tracker.model.Habit;
+import com.ozzo.habit_tracker.model.HabitEntry;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
 public class HabitService {
 
     private final List<Habit> dummyHabits = new ArrayList<>();
+    private final List<HabitEntry> dummyEntries = new ArrayList<>();
 
-    // after Bean Start, fill the list dummyHabits
+    // this is executed after Bean is initalized/called
     @PostConstruct
     void init() {
         dummyHabits.add(new Habit(1, "10 000 Schritte", true));
-        dummyHabits.add(new Habit(2, "Trainieren",       true));
-        dummyHabits.add(new Habit(3, "Lesen",            false));
+        dummyHabits.add(new Habit(2, "Trainieren", true));
+        dummyHabits.add(new Habit(3, "Lesen", false));
+
+        dummyEntries.add(new HabitEntry(dummyEntries.size()+1, LocalDate.now(), findById(1)));
+        dummyEntries.add(new HabitEntry(dummyEntries.size()+1, LocalDate.now().plusDays(2), findById(1)));
     }
 
     public List<Habit> findAll() {
-        return Collections.unmodifiableList(dummyHabits);   // read-only View
+        return dummyHabits;
     }
 
     public Habit findById(long id) {
@@ -36,5 +42,20 @@ public class HabitService {
 
     public void add(Habit habit) {
         dummyHabits.add(habit);
+    }
+
+    public void markHabitAsDone(Integer id, LocalDate date){
+        Habit habit = findById(id);
+        if (habit != null) {
+            dummyEntries.add(new HabitEntry(dummyEntries.size() + 1, date, habit));
+        }
+        System.out.println("dummyEntries:"+ dummyEntries.getLast().getHabit().getName());
+    }
+
+    public boolean isHabitDoneToday(Integer habitId) {
+        LocalDate today = LocalDate.now();
+        return dummyEntries.stream()
+                .anyMatch(entry -> entry.getHabit().getId().equals(habitId)
+                        && entry.getDate().equals(today));
     }
 }
