@@ -6,20 +6,30 @@
     <thead>
     <tr>
       <th>Habits</th>
-      <th th:each="d : ${days}" class="text-center" th:text="${d}">Mon</th>
+      <th th:each="d : ${weekDays}"
+          class="text-center"
+          th:text="${#temporals.format(d, 'E')}">
+        Mon
+      </th>
     </tr>
     </thead>
 
     <tbody>
-    <tr th:each="h : ${habits}">
-      <th scope="row" th:text="${h.name}">Habit 1</th>
 
-      <!-- seven checkboxes for each habit -->
-      <td class="text-center"
-          th:each="d : ${days}">
-        <input type="checkbox" class="form-check-input">
-      </td>
-    </tr>
+      <tr th:each="h : ${habits}">
+        <th th:text="${h.name}"></th>
+
+        <td th:each="day : ${weekDays}" class="text-center">
+          <input type="checkbox"
+                 class="form-check-input"
+                 th:data-id="${h.id}"
+                 th:data-date="${#temporals.format(day, 'yyyy-MM-dd')}"
+                 th:checked="${habitWeekStatus.get(h.id)?.get(day)}"
+                 onchange="toggleHabitDoneAtDate(this)" />
+        </td>
+      </tr>
+
+
     </tbody>
   </table>
 

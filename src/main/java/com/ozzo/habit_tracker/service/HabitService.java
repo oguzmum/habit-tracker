@@ -25,6 +25,8 @@ public class HabitService {
 
         dummyEntries.add(new HabitEntry(dummyEntries.size()+1, LocalDate.now(), findById(1)));
         dummyEntries.add(new HabitEntry(dummyEntries.size()+1, LocalDate.now().plusDays(2), findById(1)));
+        dummyEntries.add(new HabitEntry(dummyEntries.size()+1, LocalDate.now(), findById(2)));
+        dummyEntries.add(new HabitEntry(dummyEntries.size()+1, LocalDate.now().plusDays(2), findById(2)));
     }
 
     public List<Habit> findAll() {
@@ -57,5 +59,11 @@ public class HabitService {
         return dummyEntries.stream()
                 .anyMatch(entry -> entry.getHabit().getId().equals(habitId)
                         && entry.getDate().equals(today));
+    }
+
+    public boolean isHabitDoneAtDate(Integer habitId, LocalDate date) {
+        return dummyEntries.stream()
+                .anyMatch(entry -> entry.getHabit().getId().equals(habitId)
+                        && entry.getDate().equals(date));
     }
 }

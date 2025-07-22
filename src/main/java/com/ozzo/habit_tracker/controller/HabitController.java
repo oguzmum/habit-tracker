@@ -21,4 +21,16 @@ public class HabitController {
         habitService.markHabitAsDone(id, LocalDate.now());
     }
 
+    @PostMapping("/done-week")
+    public void markHabitDone(@RequestParam("habitId") Integer id,
+                              @RequestParam("date") String dateStr) {
+
+        LocalDate date = (dateStr != null)
+                ? LocalDate.parse(dateStr)
+                : LocalDate.now();
+
+        System.out.println("Habit " + id + " marked as done at " + date);
+        habitService.markHabitAsDone(id, date);
+    }
+
 }
