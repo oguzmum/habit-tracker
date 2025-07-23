@@ -15,16 +15,9 @@ public class HabitController {
 
     public HabitController(HabitService habitService){ this.habitService = habitService; }
 
-    @PostMapping("/done")
+    @PostMapping("/toggle-day")
     @ResponseBody
-    public void markHabitDone(@RequestParam("habitId") Integer id) {
-        System.out.println("Received habitId: " + id);
-        habitService.markHabitAsDone(id, LocalDate.now());
-    }
-
-    @PostMapping("/toggle")
-    @ResponseBody
-    public ResponseEntity<Void> toggleHabit(
+    public ResponseEntity<Void> toggleHabitDay(
             @RequestParam Integer habitId,
             @RequestParam Boolean completed) {
 
@@ -35,18 +28,6 @@ public class HabitController {
             habitService.markHabitAsUndone(habitId, today);
         }
         return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/done-week")
-    public void markHabitDone(@RequestParam("habitId") Integer id,
-                              @RequestParam("date") String dateStr) {
-
-        LocalDate date = (dateStr != null)
-                ? LocalDate.parse(dateStr)
-                : LocalDate.now();
-
-        System.out.println("Habit " + id + " marked as done at " + date);
-        habitService.markHabitAsDone(id, date);
     }
 
     @PostMapping("/toggle-week")

@@ -7,7 +7,6 @@ public class HabitEntry implements Serializable {
 
     private Integer id;
     private LocalDate date;
-//    private Boolean completed;
     private Habit habit;
 
     public HabitEntry(Integer id, LocalDate date, Habit habit) {
