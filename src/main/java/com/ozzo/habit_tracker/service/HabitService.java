@@ -54,6 +54,14 @@ public class HabitService {
         System.out.println("dummyEntries:"+ dummyEntries.getLast().getHabit().getName());
     }
 
+    public void markHabitAsUndone(Integer id, LocalDate date){
+        // remove all entries for this habit on that date
+        dummyEntries.removeIf(entry ->
+                entry.getHabit().getId().equals(id)
+                        && entry.getDate().equals(date)
+        );
+    }
+
     public boolean isHabitDoneToday(Integer habitId) {
         LocalDate today = LocalDate.now();
         return dummyEntries.stream()

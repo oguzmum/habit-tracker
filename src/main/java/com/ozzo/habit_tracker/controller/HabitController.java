@@ -1,6 +1,7 @@
 package com.ozzo.habit_tracker.controller;
 
 import com.ozzo.habit_tracker.service.HabitService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
@@ -21,6 +22,21 @@ public class HabitController {
         habitService.markHabitAsDone(id, LocalDate.now());
     }
 
+    @PostMapping("/toggle")
+    @ResponseBody
+    public ResponseEntity<Void> toggleHabit(
+            @RequestParam Integer habitId,
+            @RequestParam Boolean completed) {
+
+        LocalDate today = LocalDate.now();
+        if (completed) {
+            habitService.markHabitAsDone(habitId, today);
+        } else {
+            habitService.markHabitAsUndone(habitId, today);
+        }
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/done-week")
     public void markHabitDone(@RequestParam("habitId") Integer id,
                               @RequestParam("date") String dateStr) {
@@ -31,6 +47,23 @@ public class HabitController {
 
         System.out.println("Habit " + id + " marked as done at " + date);
         habitService.markHabitAsDone(id, date);
+    }
+
+    @PostMapping("/toggle-week")
+    @ResponseBody
+    public ResponseEntity<Void> toggleHabitWeek(
+            @RequestParam Integer habitId,
+            @RequestParam("date") String dateStr,
+            @RequestParam Boolean completed) {
+
+        LocalDate date = LocalDate.parse(dateStr);
+
+        if (completed) {
+            habitService.markHabitAsDone(habitId, date);
+        } else {
+            habitService.markHabitAsUndone(habitId, date);
+        }
+        return ResponseEntity.ok().build();
     }
 
 }
