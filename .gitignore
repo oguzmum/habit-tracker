@@ -38,3 +38,6 @@ HELP.md
 ### draw.io ###
 *.bkp
 *.drawio
+
+### Docker ###
+.env
