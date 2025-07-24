@@ -5,11 +5,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
-//this is liek the base route to be matched for all the below GetMapping routes
-//e.g. for getAllHabits the request must be /habits/all
 @RequestMapping("/habits")
 public class HabitController {
+
+    private static final Logger logger = LoggerFactory.getLogger(HabitController.class);
 
     private final HabitService habitService;
 
