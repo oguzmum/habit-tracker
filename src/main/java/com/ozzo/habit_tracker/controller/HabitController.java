@@ -21,7 +21,7 @@ public class HabitController {
     @PostMapping("/toggle-day")
     @ResponseBody
     public ResponseEntity<Void> toggleHabitDay(
-            @RequestParam Integer habitId,
+            @RequestParam Long habitId,
             @RequestParam Boolean completed) {
 
         LocalDate today = LocalDate.now();
@@ -36,7 +36,7 @@ public class HabitController {
     @PostMapping("/toggle-week")
     @ResponseBody
     public ResponseEntity<Void> toggleHabitWeek(
-            @RequestParam Integer habitId,
+            @RequestParam Long habitId,
             @RequestParam("date") String dateStr,
             @RequestParam Boolean completed) {
 

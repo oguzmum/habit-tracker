@@ -2,10 +2,11 @@ package com.ozzo.habit_tracker.service;
 
 import com.ozzo.habit_tracker.entity.Habit;
 import com.ozzo.habit_tracker.entity.HabitEntry;
+import com.ozzo.habit_tracker.repository.HabitEntryRepository;
 import com.ozzo.habit_tracker.repository.HabitRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import jakarta.annotation.PostConstruct;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,39 +15,26 @@ import java.util.List;
 @Service
 public class HabitService {
 
-    private final List<Habit> dummyHabits = new ArrayList<>();
+    private static final Logger log = LoggerFactory.getLogger(HabitService.class);
 
-    private final List<Habit> allHabits = new ArrayList<>();
-
-    private final List<HabitEntry> dummyEntries = new ArrayList<>();
+    private List<Habit> allHabits = new ArrayList<>();
 
     private final HabitRepository habitRepository;
+    private final HabitEntryRepository habitEntryRepository;
 
-    public HabitService(HabitRepository habitRepository) {
+    public HabitService(HabitRepository habitRepository, HabitEntryRepository habitEntryRepository) {
         this.habitRepository = habitRepository;
+        this.habitEntryRepository = habitEntryRepository;
+        allHabits = findAll();
     }
 
-
-    // this is executed after Bean is initalized/called
-    @PostConstruct
-    void init() {
-//        dummyHabits.add(new Habit(1, "10 000 Schritte", true));
-//        dummyHabits.add(new Habit(2, "Trainieren", true));
-//        dummyHabits.add(new Habit(3, "Lesen", false));
-//
-//        dummyEntries.add(new HabitEntry(dummyEntries.size()+1, LocalDate.now(), findById(1)));
-//        dummyEntries.add(new HabitEntry(dummyEntries.size()+1, LocalDate.now().plusDays(2), findById(1)));
-//        dummyEntries.add(new HabitEntry(dummyEntries.size()+1, LocalDate.now(), findById(2)));
-//        dummyEntries.add(new HabitEntry(dummyEntries.size()+1, LocalDate.now().plusDays(2), findById(2)));
-    }
 
     public List<Habit> findAll() {
-//        return dummyHabits;
         return habitRepository.findAll();
     }
 
     public Habit findById(long id) {
-        for(Habit habit : dummyHabits){
+        for(Habit habit : allHabits){
             if(habit.getId() == id){
                 return habit;
             }
@@ -55,35 +43,48 @@ public class HabitService {
     }
 
     public void add(Habit habit) {
-        dummyHabits.add(habit);
+        //insert into Db is done via the save function
+        // also comes default with the JpaRepository :D
+        habitRepository.save(habit);
     }
 
-    public void markHabitAsDone(Integer id, LocalDate date){
+    public void markHabitAsDone(Long id, LocalDate date){
         Habit habit = findById(id);
-        if (habit != null) {
-//            dummyEntries.add(new HabitEntry(dummyEntries.size() + 1, date, habit));
-            System.out.println("mark habit as done here - persist in DB");
+        if (habit == null) {
+            log.warn("Habit with ID {} not found", id);
+            return;
+        }
+
+        boolean exists = habitEntryRepository.findByHabitIdAndDate(habit.getId(), date).isPresent();
+        if (!exists) {
+            HabitEntry entry = new HabitEntry();
+            entry.setHabit(habit);
+            entry.setDate(date);
+            habitEntryRepository.save(entry);
+            log.info("Marked habit {} as done for {}", habit.getName(), date);
+        } else {
+            log.info("Habit {} already marked as done for {}", habit.getName(), date);
         }
     }
 
-    public void markHabitAsUndone(Integer id, LocalDate date){
-        // remove all entries for this habit on that date
-        dummyEntries.removeIf(entry ->
-                entry.getHabit().getId().equals(id)
-                        && entry.getDate().equals(date)
-        );
+    public void markHabitAsUndone(Long id, LocalDate date){
+        habitEntryRepository.deleteByHabitIdAndDate(id, date);
+
+        //alternatively if I dont want to do it via interface function
+//        habitEntryRepository.findByHabitIdAndDate(id, date)
+//                .ifPresent(entry -> habitEntryRepository.delete(entry));
+
+        log.info("Marked habit {} as UNdone for {}", id, date);
     }
 
     public boolean isHabitDoneToday(Long habitId) {
         LocalDate today = LocalDate.now();
-        return dummyEntries.stream()
-                .anyMatch(entry -> entry.getHabit().getId().equals(habitId)
-                        && entry.getDate().equals(today));
+        log.info("Check for Habit with the id {} if it was done for today {}", habitId, today);
+        return habitEntryRepository.findByHabitIdAndDate(habitId, today).isPresent();
     }
 
     public boolean isHabitDoneAtDate(Long habitId, LocalDate date) {
-        return dummyEntries.stream()
-                .anyMatch(entry -> entry.getHabit().getId().equals(habitId)
-                        && entry.getDate().equals(date));
+        log.info("Check for Habit with the id {} if it was done for the date {}", habitId, date);
+        return habitEntryRepository.findByHabitIdAndDate(habitId, date).isPresent();
     }
 }
