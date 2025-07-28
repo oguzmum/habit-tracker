@@ -7,7 +7,7 @@
             <input type="checkbox"
                    class="form-check-input me-2"
                    th:id="'habit' + ${h.id}"
-                   th:checked="${h.completed}"
+                   th:checked="${habitDayStatus.get(h.id)}"
                    th:data-id="${h.id}"
                    onchange="toggleHabitDone(this)"/>
 

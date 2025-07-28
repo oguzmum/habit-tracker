@@ -1,11 +1,10 @@
 package com.ozzo.habit_tracker.controller;
 
-import com.ozzo.habit_tracker.model.Habit;
+import com.ozzo.habit_tracker.entity.Habit;
 import com.ozzo.habit_tracker.service.HabitService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -31,22 +30,21 @@ public class NavigationController {
         this.habitService = habitService;
     }
 
-    //instead of creating habits in specific calls, load it once and make it available everwhere
-    @ModelAttribute("habits")
-    List<Habit> habits() {
-        List<Habit> habits = habitService.findAll();
-        //i guess i have to optimize this someday in the future when i have too many habits :D, for now its ok
-        for (Habit h : habits) {
-            boolean doneToday = habitService.isHabitDoneToday(h.getId());
-            h.setCompleted(doneToday);
-        }
-        return habits;
-    }
-
 //    @GetMapping({"/", "/daily", "/home"}) its possible to define multiple :D
     @GetMapping("/")
     public String showDaily(Model model) {
+        LocalDate today = LocalDate.now();
+
+        List<Habit> habits = habitService.findAll();
+        Map<Long, Boolean> habitStatus = new HashMap<>();
+        for (Habit h : habits) {
+            habitStatus.put(h.getId(), habitService.isHabitDoneAtDate(h.getId(), today));
+        }
+
+        model.addAttribute("habits", habits);
+        model.addAttribute("habitDayStatus", habitStatus);
         model.addAttribute("newPage", "daily");
+
         return "index";
     }
 
@@ -83,7 +81,7 @@ public class NavigationController {
         model.addAttribute("habits", habits);
 
         //get which habits are (un)checked for this week
-        Map<Integer, Map<LocalDate, Boolean>> habitWeekStatus = new HashMap<>();
+        Map<Long, Map<LocalDate, Boolean>> habitWeekStatus = new HashMap<>();
         for (Habit h : habits) {
             Map<LocalDate, Boolean> perDay = new HashMap<>();
             for (LocalDate d : weekDays) {
