@@ -12,14 +12,11 @@ public class GoalService {
 
     private final GoalRepository goalRepository;
 
-    private List<Goal> allGoals = new ArrayList<>();
-
     public GoalService(GoalRepository goalRepository) {
         this.goalRepository = goalRepository;
     }
 
     public List<Goal> findAll(){
-        allGoals = goalRepository.findAll();
-        return allGoals;
+        return goalRepository.findAll();
     }
 }

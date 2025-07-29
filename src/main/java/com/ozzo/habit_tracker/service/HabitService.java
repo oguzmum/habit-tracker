@@ -17,15 +17,12 @@ public class HabitService {
 
     private static final Logger log = LoggerFactory.getLogger(HabitService.class);
 
-    private List<Habit> allHabits = new ArrayList<>();
-
     private final HabitRepository habitRepository;
     private final HabitEntryRepository habitEntryRepository;
 
     public HabitService(HabitRepository habitRepository, HabitEntryRepository habitEntryRepository) {
         this.habitRepository = habitRepository;
         this.habitEntryRepository = habitEntryRepository;
-        allHabits = findAll();
     }
 
 
@@ -34,6 +31,7 @@ public class HabitService {
     }
 
     public Habit findById(long id) {
+        List<Habit> allHabits = this.findAll();
         for(Habit habit : allHabits){
             if(habit.getId() == id){
                 return habit;
