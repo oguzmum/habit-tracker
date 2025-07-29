@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Habit Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link th:href="@{styles/layout.css}" rel="stylesheet" />
+    <link th:href="@{/styles/layout.css}" rel="stylesheet" />
 
 </head>
 <body>
@@ -16,12 +16,10 @@
     <!--            <span style="font-size: 2rem;">&#128100;</span>-->
     <!--        </div>-->
             <nav class="nav flex-column text-center w-100 gap-3">
-
-                <a class="nav-link" th:href="@{/goals}">Goals</a>
                 <!-- Clicking this link triggers an HTTP GET request to /goals.
                  Spring’s DispatcherServlet will route that request to
                  NavigationController#showGoals(), which then returns the appropriate view -->
-                <a class="nav-link" href="#">Habits</a>
+                <a class="nav-link" th:href="@{/habits}">Habits</a>
                 <a class="nav-link" th:href="@{/goals}">Goals</a>
                 <a class="nav-link" href="#">Categories</a>
                 <hr class="my-2" />

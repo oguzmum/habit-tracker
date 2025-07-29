@@ -5,6 +5,7 @@ import com.ozzo.habit_tracker.service.HabitService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -45,6 +46,21 @@ public class NavigationController {
         model.addAttribute("habitDayStatus", habitStatus);
         model.addAttribute("newPage", "daily");
 
+        return "index";
+    }
+
+    @GetMapping("/habits")
+    public String showHabits(Model model) {
+        List<Habit> habits = habitService.findAll();
+        model.addAttribute("habits", habits);
+        model.addAttribute("newPage", "habits");
+
+        return "index";
+    }
+
+    @GetMapping("/habits/new-page")
+    public String showNewHabitDialog(Model model) {
+        model.addAttribute("newPage", "addNewHabit");
         return "index";
     }
 
