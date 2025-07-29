@@ -32,7 +32,7 @@ public class NavigationController {
     }
 
 //    @GetMapping({"/", "/daily", "/home"}) its possible to define multiple :D
-    @GetMapping("/")
+    @GetMapping({"/", "/today"})
     public String showDaily(Model model) {
         LocalDate today = LocalDate.now();
 
