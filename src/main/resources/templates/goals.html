@@ -1,3 +1,14 @@
 <div th:fragment="content">
-    <img src="https://m.media-amazon.com/images/I/710m6jMccqL._UF1000,1000_QL80_.jpg"/>
+    <h2>Goals</h2>
+
+    <ul class="list-unstyled mt-4">
+        <li th:each="g, stat : ${allGoals}" class="mb-2 d-flex align-items-center">
+
+            <label class="form-check-label"
+                   th:for="'goal' + ${g.id}"
+                   th:text="${g.name}">
+                Goal-Name
+            </label>
+        </li>
+    </ul>
 </div>
