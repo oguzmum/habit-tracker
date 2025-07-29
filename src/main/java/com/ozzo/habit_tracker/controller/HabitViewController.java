@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class HabiViewController {
+public class HabitViewController {
 
     /*
      * INFO: i always have to return index and not the requested page itself
@@ -26,7 +26,7 @@ public class HabiViewController {
 
     private final HabitService habitService;
 
-    public HabiViewController(HabitService habitService) {
+    public HabitViewController(HabitService habitService) {
         this.habitService = habitService;
     }
 
