@@ -1,15 +1,10 @@
 package com.ozzo.habit_tracker.controller;
 
-import com.ozzo.habit_tracker.entity.Category;
-import com.ozzo.habit_tracker.entity.Goal;
 import com.ozzo.habit_tracker.entity.Habit;
-import com.ozzo.habit_tracker.service.CategoryService;
-import com.ozzo.habit_tracker.service.GoalService;
 import com.ozzo.habit_tracker.service.HabitService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -22,39 +17,17 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class NavigationController {
+public class HabiViewController {
 
     /*
-    * INFO: i always have to return index and not the requested page itself
-    * otherwise the page isnt loaded in the main area, but the html page itself opens
-    * */
+     * INFO: i always have to return index and not the requested page itself
+     * otherwise the page isnt loaded in the main area, but the html page itself opens
+     * */
 
     private final HabitService habitService;
-    private final GoalService goalService;
-    private final CategoryService categoryService;
 
-    public NavigationController(HabitService habitService, GoalService goalService, CategoryService categoryService) {
+    public HabiViewController(HabitService habitService) {
         this.habitService = habitService;
-        this.goalService = goalService;
-        this.categoryService = categoryService;
-    }
-
-//    @GetMapping({"/", "/daily", "/home"}) its possible to define multiple :D
-    @GetMapping({"/", "/today"})
-    public String showDaily(Model model) {
-        LocalDate today = LocalDate.now();
-
-        List<Habit> habits = habitService.findAll();
-        Map<Long, Boolean> habitStatus = new HashMap<>();
-        for (Habit h : habits) {
-            habitStatus.put(h.getId(), habitService.isHabitDoneAtDate(h.getId(), today));
-        }
-
-        model.addAttribute("habits", habits);
-        model.addAttribute("habitDayStatus", habitStatus);
-        model.addAttribute("newPage", "daily");
-
-        return "index";
     }
 
     @GetMapping("/habits")
@@ -72,19 +45,20 @@ public class NavigationController {
         return "index";
     }
 
-    @GetMapping("/goals")
-    public String showGoals(Model model) {
-        List<Goal> allGoals = goalService.findAll();
-        model.addAttribute("allGoals", allGoals);
-        model.addAttribute("newPage", "goals");
-        return "index";
-    }
+    @GetMapping({"/", "/today"})
+    public String showDaily(Model model) {
+        LocalDate today = LocalDate.now();
 
-    @GetMapping("/categories")
-    public String showCategories(Model model) {
-        List<Category> allCategories = categoryService.findAll();
-        model.addAttribute("allCategories", allCategories);
-        model.addAttribute("newPage", "categories");
+        List<Habit> habits = habitService.findAll();
+        Map<Long, Boolean> habitStatus = new HashMap<>();
+        for (Habit h : habits) {
+            habitStatus.put(h.getId(), habitService.isHabitDoneAtDate(h.getId(), today));
+        }
+
+        model.addAttribute("habits", habits);
+        model.addAttribute("habitDayStatus", habitStatus);
+        model.addAttribute("newPage", "daily");
+
         return "index";
     }
 
@@ -127,4 +101,6 @@ public class NavigationController {
 
         return "index";
     }
+
+
 }
