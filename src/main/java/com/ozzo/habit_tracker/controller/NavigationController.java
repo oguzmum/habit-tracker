@@ -1,7 +1,9 @@
 package com.ozzo.habit_tracker.controller;
 
+import com.ozzo.habit_tracker.entity.Category;
 import com.ozzo.habit_tracker.entity.Goal;
 import com.ozzo.habit_tracker.entity.Habit;
+import com.ozzo.habit_tracker.service.CategoryService;
 import com.ozzo.habit_tracker.service.GoalService;
 import com.ozzo.habit_tracker.service.HabitService;
 import org.springframework.stereotype.Controller;
@@ -29,10 +31,12 @@ public class NavigationController {
 
     private final HabitService habitService;
     private final GoalService goalService;
+    private final CategoryService categoryService;
 
-    public NavigationController(HabitService habitService, GoalService goalService) {
+    public NavigationController(HabitService habitService, GoalService goalService, CategoryService categoryService) {
         this.habitService = habitService;
         this.goalService = goalService;
+        this.categoryService = categoryService;
     }
 
 //    @GetMapping({"/", "/daily", "/home"}) its possible to define multiple :D
@@ -73,6 +77,14 @@ public class NavigationController {
         List<Goal> allGoals = goalService.findAll();
         model.addAttribute("allGoals", allGoals);
         model.addAttribute("newPage", "goals");
+        return "index";
+    }
+
+    @GetMapping("/categories")
+    public String showCategories(Model model) {
+        List<Category> allCategories = categoryService.findAll();
+        model.addAttribute("allCategories", allCategories);
+        model.addAttribute("newPage", "categories");
         return "index";
     }
 
