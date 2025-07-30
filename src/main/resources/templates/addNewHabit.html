@@ -1,7 +1,64 @@
 <div th:fragment="content">
-  <h2>Define new habit</h2>
+  <h2>Create new Habit</h2>
 
+  <form th:action="@{/habits-form}" th:object="${habit}" method="post" class="mt-4">
 
-  <p>TODO add form here to create new habit :D</p>
+    <div class="mb-3">
+      <label for="name" class="form-label">Name *</label>
+      <input type="text" th:field="*{name}" class="form-control" id="name" required>
+    </div>
 
+    <div class="mb-3">
+      <label for="description" class="form-label">Description</label>
+      <textarea th:field="*{description}" class="form-control" id="description" rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="priority" class="form-label">Priority</label>
+      <select th:field="*{priority}" class="form-select" id="priority">
+        <option value="">-- Please Choose --</option>
+        <option th:each="p : ${#numbers.sequence(1,10,1)}"
+                th:value="${p}"
+                th:text="${p}">1</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="startDate" class="form-label">Start date</label>
+      <input type="date" th:field="*{startDate}" class="form-control" id="startDate">
+    </div>
+
+    <div class="mb-3">
+      <label for="frequencyType" class="form-label">Frequency-Type</label>
+      <select th:field="*{frequencyType}" class="form-select" id="frequencyType">
+        <option value="">-- Please Choose --</option>
+        <option th:each="type : ${T(com.ozzo.habit_tracker.entity.FrequencyType).values()}"
+                th:value="${type}" th:text="${type}"></option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="frequencyValue" class="form-label">Frequency-Value (e.g. 3x/Week)</label>
+      <input type="number" th:field="*{frequencyValue}" class="form-control" id="frequencyValue">
+    </div>
+
+    <div class="mb-3">
+      <label for="goal" class="form-label">Associated Goal</label>
+      <select th:field="*{goal}" class="form-select" id="goal">
+        <option value="">-- No Goal --</option>
+        <option th:each="g : ${goals}" th:value="${g.id}" th:text="${g.name}"></option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="category" class="form-label">Category</label>
+      <select th:field="*{category}" class="form-select" id="category">
+        <option value="">-- No Category --</option>
+        <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a th:href="@{/habits}" class="btn btn-secondary ms-2">Cancle</a>
+  </form>
 </div>

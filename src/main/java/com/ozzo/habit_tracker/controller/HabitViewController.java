@@ -1,10 +1,16 @@
 package com.ozzo.habit_tracker.controller;
 
 import com.ozzo.habit_tracker.entity.Habit;
+import com.ozzo.habit_tracker.service.CategoryService;
+import com.ozzo.habit_tracker.service.GoalService;
 import com.ozzo.habit_tracker.service.HabitService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -19,15 +25,21 @@ import java.util.Map;
 @Controller
 public class HabitViewController {
 
+    private static final Logger log = LoggerFactory.getLogger(HabitViewController.class);
+
     /*
      * INFO: i always have to return index and not the requested page itself
      * otherwise the page isnt loaded in the main area, but the html page itself opens
      * */
 
     private final HabitService habitService;
+    private final GoalService goalService;
+    private final CategoryService categoryService;
 
-    public HabitViewController(HabitService habitService) {
+    public HabitViewController(HabitService habitService, GoalService goalService, CategoryService categoryService) {
         this.habitService = habitService;
+        this.goalService = goalService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/habits")
@@ -40,9 +52,21 @@ public class HabitViewController {
     }
 
     @GetMapping("/habits/new-page")
-    public String showNewHabitDialog(Model model) {
+    public String showNewHabitForm(Model model) {
+        //new Habit that will created with parameters as its being defined by the user in the UI :D
+        model.addAttribute("habit", new Habit());
+        model.addAttribute("goals", goalService.findAll());
+        model.addAttribute("categories", categoryService.findAll());
         model.addAttribute("newPage", "addNewHabit");
         return "index";
+    }
+
+    @PostMapping("/habits-form")
+    public String saveHabit(@ModelAttribute("habit") Habit habit) {
+        habitService.save(habit);
+        //i have to use redirect, as i dont want to load the habits.html page on its on
+        //but load the html in the main area of the index.html
+        return "redirect:/habits";
     }
 
     @GetMapping({"/", "/today"})
@@ -101,6 +125,5 @@ public class HabitViewController {
 
         return "index";
     }
-
 
 }

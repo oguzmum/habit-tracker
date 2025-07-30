@@ -1,5 +1,6 @@
 package com.ozzo.habit_tracker.controller;
 
+import com.ozzo.habit_tracker.entity.Habit;
 import com.ozzo.habit_tracker.service.HabitService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,9 @@ public class HabitController {
 
     private final HabitService habitService;
 
-    public HabitController(HabitService habitService){ this.habitService = habitService; }
+    public HabitController(HabitService habitService){
+        this.habitService = habitService;
+    }
 
     @PostMapping("/toggle-day")
     @ResponseBody
@@ -48,6 +51,12 @@ public class HabitController {
             habitService.markHabitAsUndone(habitId, date);
         }
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/new-habit")
+    public ResponseEntity<Habit> createHabit(@RequestBody Habit habit) {
+        Habit savedHabit = habitService.save(habit);
+        return ResponseEntity.ok(savedHabit);
     }
 
 }

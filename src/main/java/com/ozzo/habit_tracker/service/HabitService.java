@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -84,5 +83,9 @@ public class HabitService {
     public boolean isHabitDoneAtDate(Long habitId, LocalDate date) {
         log.info("Check for Habit with the id {} if it was done for the date {}", habitId, date);
         return habitEntryRepository.findByHabitIdAndDate(habitId, date).isPresent();
+    }
+
+    public Habit save(Habit habit){
+        return habitRepository.save(habit);
     }
 }
