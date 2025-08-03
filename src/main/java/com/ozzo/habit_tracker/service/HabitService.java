@@ -76,12 +76,10 @@ public class HabitService {
 
     public boolean isHabitDoneToday(Long habitId) {
         LocalDate today = LocalDate.now();
-        log.info("Check for Habit with the id {} if it was done for today {}", habitId, today);
         return habitEntryRepository.findByHabitIdAndDate(habitId, today).isPresent();
     }
 
     public boolean isHabitDoneAtDate(Long habitId, LocalDate date) {
-        log.info("Check for Habit with the id {} if it was done for the date {}", habitId, date);
         return habitEntryRepository.findByHabitIdAndDate(habitId, date).isPresent();
     }
 
