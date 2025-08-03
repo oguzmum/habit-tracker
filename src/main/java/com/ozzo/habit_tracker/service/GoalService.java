@@ -19,4 +19,8 @@ public class GoalService {
     public List<Goal> findAll(){
         return goalRepository.findAll();
     }
+
+    public Goal save(Goal goal){
+        return goalRepository.save(goal);
+    }
 }
