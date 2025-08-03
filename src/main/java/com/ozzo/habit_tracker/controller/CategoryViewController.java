@@ -2,14 +2,20 @@ package com.ozzo.habit_tracker.controller;
 
 import com.ozzo.habit_tracker.entity.Category;
 import com.ozzo.habit_tracker.service.CategoryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
 @Controller
 public class CategoryViewController {
+
+    private static final Logger log = LoggerFactory.getLogger(CategoryViewController.class);
 
     private final CategoryService categoryService;
 
@@ -25,5 +31,18 @@ public class CategoryViewController {
         return "index";
     }
 
+    @GetMapping("/categories/new-page")
+    public String showNewHabitForm(Model model) {
+        model.addAttribute("category", new Category());
+        model.addAttribute("newPage", "addNewCategory");
+        return "index";
+    }
+
+    @PostMapping("/categories/form")
+    public String saveGoal(@ModelAttribute("category") Category category) {
+        categoryService.save(category);
+        log.info("Saved new Category {} with id {}", category.getName(), category.getId());
+        return "redirect:/categories";
+    }
 
 }

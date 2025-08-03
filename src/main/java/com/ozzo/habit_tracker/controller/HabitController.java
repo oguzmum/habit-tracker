@@ -52,11 +52,4 @@ public class HabitController {
         }
         return ResponseEntity.ok().build();
     }
-
-    @PostMapping("/new-habit")
-    public ResponseEntity<Habit> createHabit(@RequestBody Habit habit) {
-        Habit savedHabit = habitService.save(habit);
-        return ResponseEntity.ok(savedHabit);
-    }
-
 }
