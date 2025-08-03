@@ -30,13 +30,8 @@ public class HabitService {
     }
 
     public Habit findById(long id) {
-        List<Habit> allHabits = this.findAll();
-        for(Habit habit : allHabits){
-            if(habit.getId() == id){
-                return habit;
-            }
-        }
-        return null;
+        return habitRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Habit not found with id: " + id));
     }
 
     public void add(Habit habit) {
@@ -85,5 +80,9 @@ public class HabitService {
 
     public Habit save(Habit habit){
         return habitRepository.save(habit);
+    }
+
+    public void deleteById(Long id){
+        habitRepository.deleteById(id);
     }
 }

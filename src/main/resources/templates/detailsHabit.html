@@ -1,0 +1,63 @@
+<div th:fragment="content">
+    <h2 th:text="${habit.name}">Habit Name</h2>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-sm-3"><strong>Name:</strong></div>
+                <div class="col-sm-9" th:text="${habit.name}">Habit Name</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-3"><strong>Description:</strong></div>
+                <div class="col-sm-9" th:text="${habit.description ?: 'No description'}">Description</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-3"><strong>Priority:</strong></div>
+                <div class="col-sm-9" th:text="${habit.priority ?: 'Not set'}">Priority</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-3"><strong>Start Date:</strong></div>
+                <div class="col-sm-9" th:text="${habit.startDate ?: 'Not set'}">Start Date</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-3"><strong>Frequency Type:</strong></div>
+                <div class="col-sm-9" th:text="${habit.frequencyType ?: 'Not set'}">Frequency Type</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-3"><strong>Frequency Value:</strong></div>
+                <div class="col-sm-9" th:text="${habit.frequencyValue ?: 'Not set'}">Frequency Value</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-3"><strong>Associated Goal:</strong></div>
+                <div class="col-sm-9" th:text="${habit.goal?.name ?: 'No goal assigned'}">Goal</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-3"><strong>Category:</strong></div>
+                <div class="col-sm-9" th:text="${habit.category?.name ?: 'No category assigned'}">Category</div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a th:href="@{/habits}" class="btn btn-secondary">Back to Habits</a>
+
+        <form th:action="@{/habits/delete/{id}(id=${habit.id})}"
+              method="post"
+              class="d-inline ms-2"
+              th:data-habit-name="${habit.name}"
+              onsubmit="return confirm('Are you sure to delete the habit: ' + this.dataset.habitName + ' ?');">
+
+            <button type="submit" class="btn btn-danger">
+                Delete
+            </button>
+        </form>
+    </div>
+</div>

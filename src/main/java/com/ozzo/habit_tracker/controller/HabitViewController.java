@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.DayOfWeek;
@@ -125,5 +126,20 @@ public class HabitViewController {
 
         return "index";
     }
+
+    @GetMapping("/habits/{id}")
+    public String showGoalDetails(@PathVariable Long id, Model model) {
+        Habit habit = habitService.findById(id);
+        model.addAttribute("habit", habit);
+        model.addAttribute("newPage", "detailsHabit");
+        return "index";
+    }
+
+    @PostMapping("/habits/delete/{id}")
+    public String deleteGoal(@PathVariable Long id) {
+        habitService.deleteById(id);
+        return "redirect:/habits";
+    }
+
 
 }
