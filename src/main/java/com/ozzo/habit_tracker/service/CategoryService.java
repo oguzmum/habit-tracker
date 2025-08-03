@@ -25,4 +25,14 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
+    public Category findById(Long id) {
+        //alternative is to use Optional<Category> as return Type, but i want a clear exception if a entry is not found
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+    }
+
+    public void deleteById(Long id){
+        categoryRepository.deleteById(id);
+    }
+
 }

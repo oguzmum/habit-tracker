@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
@@ -44,5 +45,20 @@ public class CategoryViewController {
         log.info("Saved new Category {} with id {}", category.getName(), category.getId());
         return "redirect:/categories";
     }
+
+    @GetMapping("/categories/{id}")
+    public String showCategoryDetails(@PathVariable Long id, Model model) {
+        Category category = categoryService.findById(id);
+        model.addAttribute("category", category);
+        model.addAttribute("newPage", "detailsCategory");
+        return "index";
+    }
+
+    @PostMapping("/categories/delete/{id}")
+    public String deleteCategory(@PathVariable Long id) {
+        categoryService.deleteById(id);
+        return "redirect:/categories";
+    }
+
 
 }

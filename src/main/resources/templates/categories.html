@@ -2,13 +2,19 @@
     <h2>Categories</h2>
 
     <ul class="list-unstyled mt-4">
-        <li th:each="c, stat : ${allCategories}" class="mb-2 d-flex align-items-center">
+        <li th:each="c : ${allCategories}" class="mb-2 d-flex align-items-center">
+            <a th:href="@{/categories/{id}(id=${c.id})}" th:text="${c.name}" class="btn btn-link p-0"></a>
 
-            <label class="form-check-label"
-                   th:for="'category' + ${c.id}"
-                   th:text="${c.name}">
-                Category-Name
-            </label>
+            <form th:action="@{/categories/delete/{id}(id=${c.id})}"
+                  method="post"
+                  class="m-0 p-0"
+                  onsubmit="return confirm('Kategorie wirklich löschen?');">
+
+                <button type="submit" class="btn btn-danger btn-sm ms-2 px-2 py-0" style="font-size: 0.8rem;">
+                    X️
+                </button>
+            </form>
+
         </li>
     </ul>
 
