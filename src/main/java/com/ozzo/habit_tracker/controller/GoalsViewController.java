@@ -1,5 +1,6 @@
 package com.ozzo.habit_tracker.controller;
 
+import com.ozzo.habit_tracker.entity.Category;
 import com.ozzo.habit_tracker.entity.Goal;
 import com.ozzo.habit_tracker.service.GoalService;
 import org.slf4j.Logger;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
@@ -44,5 +46,20 @@ public class GoalsViewController {
         log.info("Saved new Goal {} with id {}", goal.getName(), goal.getId());
         return "redirect:/goals";
     }
+
+    @GetMapping("/goals/{id}")
+    public String showGoalDetails(@PathVariable Long id, Model model) {
+        Goal goal = goalService.findById(id);
+        model.addAttribute("goal", goal);
+        model.addAttribute("newPage", "detailsGoal");
+        return "index";
+    }
+
+    @PostMapping("/goals/delete/{id}")
+    public String deleteGoal(@PathVariable Long id) {
+        goalService.deleteById(id);
+        return "redirect:/goals";
+    }
+
 
 }

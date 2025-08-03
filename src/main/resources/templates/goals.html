@@ -4,11 +4,19 @@
     <ul class="list-unstyled mt-4">
         <li th:each="g, stat : ${allGoals}" class="mb-2 d-flex align-items-center">
 
-            <label class="form-check-label"
-                   th:for="'goal' + ${g.id}"
-                   th:text="${g.name}">
-                Goal-Name
-            </label>
+            <a th:href="@{/goals/{id}(id=${g.id})}" th:text="${g.name}" class="btn btn-link p-0"></a>
+
+            <form th:action="@{/goals/delete/{id}(id=${g.id})}"
+                  method="post"
+                  class="m-0 p-0"
+                  th:data-goal-name="${g.name}"
+                  onsubmit="return confirm('Are you sure to delete the goal: ' + this.dataset.goalName + ' ?');">
+
+                <button type="submit" class="btn btn-danger btn-sm ms-2 px-2 py-0" style="font-size: 0.8rem;">
+                    X️
+                </button>
+            </form>
+
         </li>
     </ul>
 

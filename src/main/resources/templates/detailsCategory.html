@@ -7,7 +7,7 @@
   <form th:action="@{/categories/delete/{id}(id=${category.id})}"
         method="post"
         th:data-category-name="${category.name}"
-        onsubmit="return confirm('Kategorie ' + this.dataset.categoryName + ' wirklich löschen?');">
+        onsubmit="return confirm('Are you sure to delete the category: ' + this.dataset.categoryName + ' ?');">
 
     <button type="submit" class="btn btn-danger btn-secondary">
       Delete

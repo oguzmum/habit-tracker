@@ -23,4 +23,13 @@ public class GoalService {
     public Goal save(Goal goal){
         return goalRepository.save(goal);
     }
+
+    public Goal findById(Long id){
+        return goalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Goal not found with id: " + id));
+    }
+
+    public void deleteById(Long id){
+        goalRepository.deleteById(id);
+    }
 }

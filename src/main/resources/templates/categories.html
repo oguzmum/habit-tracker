@@ -8,7 +8,8 @@
             <form th:action="@{/categories/delete/{id}(id=${c.id})}"
                   method="post"
                   class="m-0 p-0"
-                  onsubmit="return confirm('Kategorie wirklich löschen?');">
+                  th:data-category-name="${c.name}"
+                  onsubmit="return confirm('Are you sure to delete the category: ' + this.dataset.categoryName + ' ?');">
 
                 <button type="submit" class="btn btn-danger btn-sm ms-2 px-2 py-0" style="font-size: 0.8rem;">
                     X️
