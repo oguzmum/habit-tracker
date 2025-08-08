@@ -40,4 +40,4 @@ HELP.md
 *.drawio
 
 ### Docker ###
-.env
+Docker/.env
