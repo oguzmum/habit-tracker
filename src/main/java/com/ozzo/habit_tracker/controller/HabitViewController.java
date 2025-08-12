@@ -8,14 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.IsoFields;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -71,17 +69,42 @@ public class HabitViewController {
     }
 
     @GetMapping({"/", "/today"})
-    public String showDaily(Model model) {
+    public String showDaily(Model model, @RequestParam(value = "date", required = false) String dateParam) {
         LocalDate today = LocalDate.now();
+        LocalDate current;
+
+        if (dateParam != null && !dateParam.isBlank()) {
+            try {
+                current = LocalDate.parse(dateParam);
+            } catch (DateTimeParseException e) {
+                current = today;
+            }
+        } else {
+            current = today;
+        }
+
+        // don't allow future dates
+        if (current.isAfter(today)) {
+            return "redirect:/daily?date=" + today;
+        }
+
+        LocalDate prevDate = current.minusDays(1);
+        LocalDate nextCandidate = current.plusDays(1);
+        LocalDate nextDate = nextCandidate.isAfter(today) ? today : nextCandidate;
+        boolean nextDisabled = !current.isBefore(today);
 
         List<Habit> habits = habitService.findAll();
         Map<Long, Boolean> habitStatus = new HashMap<>();
         for (Habit h : habits) {
-            habitStatus.put(h.getId(), habitService.isHabitDoneAtDate(h.getId(), today));
+            habitStatus.put(h.getId(), habitService.isHabitDoneAtDate(h.getId(), current));
         }
 
         model.addAttribute("habits", habits);
         model.addAttribute("habitDayStatus", habitStatus);
+        model.addAttribute("currentDate", current);
+        model.addAttribute("prevDate", prevDate);
+        model.addAttribute("nextDate", nextDate);
+        model.addAttribute("nextDisabled", nextDisabled);
         model.addAttribute("newPage", "daily");
 
         return "index";

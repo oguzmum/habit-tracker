@@ -13,17 +13,17 @@ services:
       - "${POSTGRES_PORT}:5432"
     restart: unless-stopped
 
-  habit-tracker:
-    image: habit-tracker:latest
-    container_name: habit-tracker
-    depends_on:
-      - postgres_db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
-      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "1200:1200"
+#  habit-tracker:
+#    image: habit-tracker:latest
+#    container_name: habit-tracker
+#    depends_on:
+#      - postgres_db
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+#      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+#      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+#    ports:
+#      - "1200:8080" # Port 8080 can be changed via SERVER_PORT in environment variables
 
 volumes:
   db_data:
