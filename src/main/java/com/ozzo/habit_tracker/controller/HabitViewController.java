@@ -112,9 +112,28 @@ public class HabitViewController {
 
     // i couldn't create the text outputs in the frontend, so i create them here and load dem in model Variables
     @GetMapping("/week")
-    public String showWeek(Model model) {
+    public String showWeek(Model model, @RequestParam(value = "date", required = false) String dateParam) {
         LocalDate today   = LocalDate.now();
-        LocalDate monday  = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+        LocalDate anchor;
+        try {
+            anchor = (dateParam == null || dateParam.isBlank()) ? today : LocalDate.parse(dateParam);
+        } catch (DateTimeParseException e) {
+            anchor = today;
+        }
+        LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate monday = anchor.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+        // never allow navigating beyond the current week
+        if (monday.isAfter(thisMonday)) {
+            return "redirect:/week?date=" + today;
+        }
+
+        LocalDate prevWeekDate = monday.minusWeeks(1);
+        LocalDate nextWeekCandidate = monday.plusWeeks(1);
+        LocalDate nextWeekDate = nextWeekCandidate.isAfter(thisMonday) ? thisMonday : nextWeekCandidate;
+        boolean nextDisabled = monday.equals(thisMonday);
+
 
         List<LocalDate> weekDays = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
@@ -124,13 +143,16 @@ public class HabitViewController {
         // e.g. "Week 25: 01.07. – 07.07."
         String headline = String.format(
                 "Week %d: %s - %s",
-                today.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR),
+                monday.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR), //monday to get the correct weeknumber :D
                 weekDays.getFirst().format(DateTimeFormatter.ofPattern("dd.MM.")),
                 weekDays.getLast().format(DateTimeFormatter.ofPattern("dd.MM."))
         );
 
         model.addAttribute("weekHeadline", headline);
         model.addAttribute("weekDays", weekDays);
+        model.addAttribute("prevWeekDate", prevWeekDate);
+        model.addAttribute("nextWeekDate", nextWeekDate);
+        model.addAttribute("nextDisabled", nextDisabled);
         model.addAttribute("newPage", "week");
 
         List<Habit> habits = habitService.findAll();
