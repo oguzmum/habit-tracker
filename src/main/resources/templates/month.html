@@ -1,0 +1,76 @@
+<div th:fragment="content">
+    <div class="d-flex align-items-center gap-2 mt-2 mb-3">
+        <a class="btn btn-outline-secondary"
+           th:href="@{/month(year=${#temporals.year(prevMonthFirst)}, month=${#temporals.month(prevMonthFirst)})}">
+            ← Prev month
+        </a>
+
+        <h2 class="flex-grow-1 text-center mb-0" th:text="${monthHeadline}">Month YYYY</h2>
+
+        <span th:if="${nextDisabled}" class="btn btn-outline-secondary disabled"
+              aria-disabled="true" tabindex="-1">Next month →</span>
+        <a th:if="${!nextDisabled}" class="btn btn-outline-secondary"
+           th:href="@{/month(year=${#temporals.year(nextMonthFirst)}, month=${#temporals.month(nextMonthFirst)})}">
+            Next month →
+        </a>
+
+        <a class="btn btn-outline-primary"
+           th:href="@{/month(year=${#temporals.year(today)}, month=${#temporals.month(today)})}">
+            This month
+        </a>
+
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm align-middle">
+            <thead class="table-light">
+            <tr>
+                <th style="position:sticky; left:0; background:var(--bs-body-bg); z-index:2;">Habits</th>
+                <th th:each="d : ${monthDays}"
+                    class="text-center"
+                    th:text="${#temporals.day(d)}">
+                    1
+                </th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="h : ${habits}">
+                <th style="position:sticky; left:0; background:var(--bs-body-bg); z-index:1;"
+                    th:text="${h.name}">Habit</th>
+
+                <td th:each="day : ${monthDays}"
+                    th:classappend="${day.equals(today)} ? 'table-primary' : ''"
+                    class="text-center">
+                    <input type="checkbox"
+                           class="form-check-input"
+                           th:data-id="${h.id}"
+                           th:data-date="${#temporals.format(day, 'yyyy-MM-dd')}"
+                           th:checked="${habitMonthStatus.get(h.id)?.get(day)}"
+                           th:disabled="${day.isAfter(today)}"
+                           onchange="toggleHabitDoneAtDate(this)" />
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Optional: keyboard navigation (←/→) -->
+    <script th:inline="javascript">
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowLeft') {
+            window.location.href = /*[[@{/month(
+              year=${#temporals.year(prevMonthFirst)},
+              month=${#temporals.month(prevMonthFirst)})}]]*/ '#';
+          }
+          if (e.key === 'ArrowRight') {
+            const nextDisabled = /*[[${nextDisabled}]]*/ true;
+            if (!nextDisabled) {
+              window.location.href = /*[[@{/month(
+                year=${#temporals.year(nextMonthFirst)},
+                month=${#temporals.month(nextMonthFirst)})}]]*/ '#';
+            }
+          }
+        });
+    </script>
+</div>

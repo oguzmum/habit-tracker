@@ -16,10 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.IsoFields;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class HabitViewController {
@@ -110,7 +107,7 @@ public class HabitViewController {
         return "index";
     }
 
-    // i couldn't create the text outputs in the frontend, so i create them here and load dem in model Variables
+    // i couldn't create the text outputs in the frontend, so i create them here and load them in model Variables
     @GetMapping("/week")
     public String showWeek(Model model, @RequestParam(value = "date", required = false) String dateParam) {
         LocalDate today   = LocalDate.now();
@@ -171,6 +168,61 @@ public class HabitViewController {
 
         return "index";
     }
+
+    @GetMapping("/month")
+    public String showMonth(Model model, @RequestParam(required = false) Integer year, @RequestParam(required = false) Integer month) {
+        LocalDate today = LocalDate.now();
+        int y = (year == null) ? today.getYear() : year;
+        int m = (month == null) ? today.getMonthValue() : month;
+        if (m < 1 || m > 12) m = today.getMonthValue();
+
+        LocalDate first = LocalDate.of(y, m, 1);
+        LocalDate thisMonthFirst = LocalDate.of(today.getYear(), today.getMonthValue(), 1);
+
+        // never navigate beyond current month
+        if (first.isAfter(thisMonthFirst)) {
+            return "redirect:/month?year=" + today.getYear() + "&month=" + today.getMonthValue();
+        }
+
+        LocalDate prevMonthFirst = first.minusMonths(1).withDayOfMonth(1);
+        LocalDate nextCandidate  = first.plusMonths(1).withDayOfMonth(1);
+        LocalDate nextMonthFirst = nextCandidate.isAfter(thisMonthFirst) ? thisMonthFirst : nextCandidate;
+        boolean nextDisabled = first.equals(thisMonthFirst);
+
+        // days in month
+        List<LocalDate> monthDays = new ArrayList<>();
+        for (int d = 1; d <= first.lengthOfMonth(); d++) {
+            monthDays.add(first.withDayOfMonth(d));
+        }
+
+        DateTimeFormatter monthFmt = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH);
+        String headline = first.format(monthFmt);
+
+        List<Habit> habits = habitService.findAll();
+        Map<Long, Map<LocalDate, Boolean>> habitMonthStatus = new HashMap<>();
+        for (Habit h : habits) {
+            Map<LocalDate, Boolean> perDay = new HashMap<>();
+            for (LocalDate d : monthDays) {
+                perDay.put(d, habitService.isHabitDoneAtDate(h.getId(), d));
+            }
+            habitMonthStatus.put(h.getId(), perDay);
+        }
+
+        model.addAttribute("monthHeadline", headline);
+        model.addAttribute("monthDays", monthDays);
+        model.addAttribute("prevMonthFirst", prevMonthFirst);
+        model.addAttribute("nextMonthFirst", nextMonthFirst);
+        model.addAttribute("nextDisabled", nextDisabled);
+        model.addAttribute("today", today);
+
+        model.addAttribute("habits", habits);
+        model.addAttribute("habitMonthStatus", habitMonthStatus);
+        model.addAttribute("newPage", "month");
+
+        return "index";
+    }
+
+
 
     @GetMapping("/habits/{id}")
     public String showGoalDetails(@PathVariable Long id, Model model) {
