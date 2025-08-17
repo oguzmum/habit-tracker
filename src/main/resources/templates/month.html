@@ -19,6 +19,14 @@
             This month
         </a>
 
+        <a class="btn btn-outline-secondary"
+           th:href="@{/export/habits/month.csv(
+           year=${#temporals.year(monthDays[0])},
+           month=${#temporals.month(monthDays[0])},
+           delimiter=';')}">
+            Export CSV
+        </a>
+
     </div>
 
     <div class="table-responsive">
@@ -55,7 +63,6 @@
         </table>
     </div>
 
-    <!-- Optional: keyboard navigation (←/→) -->
     <script th:inline="javascript">
         document.addEventListener('keydown', (e) => {
           if (e.key === 'ArrowLeft') {
