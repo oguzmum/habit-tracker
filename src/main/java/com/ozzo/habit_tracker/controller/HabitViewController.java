@@ -224,13 +224,191 @@ public class HabitViewController {
 
 
 
+//    @GetMapping("/habits/{id}")
+//    public String showHabitDetails(@PathVariable Long id, Model model) {
+//        Habit habit = habitService.findById(id);
+//        model.addAttribute("habit", habit);
+//        model.addAttribute("newPage", "detailsHabit");
+//        return "index";
+//    }
+
     @GetMapping("/habits/{id}")
-    public String showGoalDetails(@PathVariable Long id, Model model) {
+    public String showHabitDetails(@PathVariable Long id,
+                                   @RequestParam(required = false) Integer year,
+                                   @RequestParam(required = false) Integer month,
+                                   Model model) {
         Habit habit = habitService.findById(id);
+        LocalDate today = LocalDate.now();
+
+        // ----- Month context (allows prev/next month, capped at current month) -----
+        int y = (year == null) ? today.getYear() : year;
+        int m = (month == null) ? today.getMonthValue() : month;
+        if (m < 1 || m > 12) m = today.getMonthValue();
+
+        LocalDate first = LocalDate.of(y, m, 1);
+        LocalDate thisMonthFirst = LocalDate.of(today.getYear(), today.getMonthValue(), 1);
+        if (first.isAfter(thisMonthFirst)) {
+            return "redirect:/habits/" + id + "?year=" + today.getYear() + "&month=" + today.getMonthValue();
+        }
+
+        LocalDate prevMonthFirst = first.minusMonths(1).withDayOfMonth(1);
+        LocalDate nextCandidate  = first.plusMonths(1).withDayOfMonth(1);
+        LocalDate nextMonthFirst = nextCandidate.isAfter(thisMonthFirst) ? thisMonthFirst : nextCandidate;
+        boolean nextDisabled = first.equals(thisMonthFirst);
+
+        // Days of chosen month
+        List<LocalDate> monthDays = new ArrayList<>();
+        for (int d = 1; d <= first.lengthOfMonth(); d++) {
+            monthDays.add(first.withDayOfMonth(d));
+        }
+
+        // Status map for chosen month
+        Map<LocalDate, Boolean> monthStatus = new HashMap<>();
+        for (LocalDate d : monthDays) {
+            monthStatus.put(d, habitService.isHabitDoneAtDate(habit.getId(), d));
+        }
+
+        // Month stats (count only up to today in the current month)
+        int denom;
+        int doneCountMonth = 0;
+        if (first.getYear() == today.getYear() && first.getMonthValue() == today.getMonthValue()) {
+            denom = today.getDayOfMonth();
+            for (int d = 1; d <= denom; d++) {
+                if (Boolean.TRUE.equals(monthStatus.get(first.withDayOfMonth(d)))) doneCountMonth++;
+            }
+        } else {
+            denom = first.lengthOfMonth();
+            for (LocalDate d : monthDays) {
+                if (Boolean.TRUE.equals(monthStatus.get(d))) doneCountMonth++;
+            }
+        }
+        double completionRateMonth = denom == 0 ? 0.0 : (doneCountMonth * 100.0 / denom);
+
+        // Streaks (up to today)
+        int currentStreak = 0;
+        LocalDate cursor = today;
+        while (!cursor.isBefore(habit.getStartDate() != null ? habit.getStartDate() : LocalDate.of(1970,1,1))
+                && habitService.isHabitDoneAtDate(habit.getId(), cursor)) {
+            currentStreak++;
+            cursor = cursor.minusDays(1);
+        }
+
+        // Longest streak in current year
+        int yearOfStats = today.getYear();
+        int longestStreak = 0, running = 0;
+        LocalDate day = LocalDate.of(yearOfStats, 1, 1);
+        while (!day.isAfter(today)) {
+            if (habitService.isHabitDoneAtDate(habit.getId(), day)) {
+                running++;
+                longestStreak = Math.max(longestStreak, running);
+            } else {
+                running = 0;
+            }
+            day = day.plusDays(1);
+        }
+
+        // Year overview: per-month done counts vs totals
+        List<Integer> monthlyDoneCounts = new ArrayList<>(12);
+        List<Integer> monthlyTotals = new ArrayList<>(12);
+
+        for (int mm = 1; mm <= 12; mm++) {
+            LocalDate firstOfM = LocalDate.of(yearOfStats, mm, 1);
+            int len = firstOfM.lengthOfMonth();
+
+            // robust future detection (also covers if you ever change yearOfStats)
+            boolean isFutureMonth =
+                    (yearOfStats > today.getYear()) ||
+                            (yearOfStats == today.getYear() && mm > today.getMonthValue());
+
+            int totalForMonth;
+            int done = 0;
+
+            if (isFutureMonth) {
+                // future month → nothing has happened yet
+                totalForMonth = 0;
+                // done stays 0
+            } else if (yearOfStats == today.getYear() && mm == today.getMonthValue()) {
+                // current month → count only up to today
+                totalForMonth = today.getDayOfMonth();
+                for (int d = 1; d <= totalForMonth; d++) {
+                    LocalDate dt = firstOfM.withDayOfMonth(d);
+                    if (habitService.isHabitDoneAtDate(habit.getId(), dt)) done++;
+                }
+            } else {
+                // past month → full month
+                totalForMonth = len;
+                for (int d = 1; d <= len; d++) {
+                    LocalDate dt = firstOfM.withDayOfMonth(d);
+                    if (habitService.isHabitDoneAtDate(habit.getId(), dt)) done++;
+                }
+            }
+
+            monthlyDoneCounts.add(done);
+            monthlyTotals.add(totalForMonth);
+        }
+
+        // Labels
+        String monthHeadline = first.getMonth().name().substring(0,1)
+                + first.getMonth().name().substring(1).toLowerCase() + " " + y;
+
+        //for the link below the year month stats
+        List<Boolean> monthIsFuture = new ArrayList<>(12);
+        for (int mm = 1; mm <= 12; mm++) {
+            LocalDate firstOfM = LocalDate.of(yearOfStats, mm, 1);
+            int len = firstOfM.lengthOfMonth();
+
+            boolean isFutureMonth =
+                    (yearOfStats > today.getYear()) ||
+                            (yearOfStats == today.getYear() && mm > today.getMonthValue());
+
+            int totalForMonth;
+            int done = 0;
+
+            if (isFutureMonth) {
+                totalForMonth = 0; // show 0/0
+            } else if (yearOfStats == today.getYear() && mm == today.getMonthValue()) {
+                totalForMonth = today.getDayOfMonth();
+                for (int d = 1; d <= totalForMonth; d++) {
+                    if (habitService.isHabitDoneAtDate(habit.getId(), firstOfM.withDayOfMonth(d))) done++;
+                }
+            } else {
+                totalForMonth = len;
+                for (int d = 1; d <= len; d++) {
+                    if (habitService.isHabitDoneAtDate(habit.getId(), firstOfM.withDayOfMonth(d))) done++;
+                }
+            }
+
+            monthlyDoneCounts.add(done);
+            monthlyTotals.add(totalForMonth);
+            monthIsFuture.add(isFutureMonth);
+        }
+
+        // Model
         model.addAttribute("habit", habit);
+        model.addAttribute("monthHeadline", monthHeadline);
+        model.addAttribute("monthDays", monthDays);
+        model.addAttribute("monthStatus", monthStatus);
+        model.addAttribute("prevMonthFirst", prevMonthFirst);
+        model.addAttribute("nextMonthFirst", nextMonthFirst);
+        model.addAttribute("nextDisabled", nextDisabled);
+        model.addAttribute("today", today);
+
+        model.addAttribute("doneCountMonth", doneCountMonth);
+        model.addAttribute("completionRateMonth", completionRateMonth);
+        model.addAttribute("currentStreak", currentStreak);
+        model.addAttribute("longestStreak", longestStreak);
+        model.addAttribute("monthlyDoneCounts", monthlyDoneCounts);
+        model.addAttribute("monthlyTotals", monthlyTotals);
+        model.addAttribute("yearOfStats", yearOfStats);
+        model.addAttribute("monthIsFuture", monthIsFuture);
+
         model.addAttribute("newPage", "detailsHabit");
         return "index";
     }
+
+
+
+
 
     @PostMapping("/habits/delete/{id}")
     public String deleteGoal(@PathVariable Long id) {

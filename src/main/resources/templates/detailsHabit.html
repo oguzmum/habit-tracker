@@ -1,51 +1,169 @@
 <div th:fragment="content">
-    <h2 th:text="${habit.name}">Habit Name</h2>
+    <!-- Header + Back -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <a class="btn btn-outline-secondary" th:href="@{/habits}">← Back to Habits</a>
+        <h2 class="m-0" th:text="${habit.name}">Habit Name</h2>
+        <span></span>
+    </div>
 
-    <div class="card mt-4">
+    <!-- General Info (read-only) -->
+    <div class="card">
         <div class="card-body">
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-sm-3"><strong>Name:</strong></div>
                 <div class="col-sm-9" th:text="${habit.name}">Habit Name</div>
             </div>
 
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-sm-3"><strong>Description:</strong></div>
                 <div class="col-sm-9" th:text="${habit.description ?: 'No description'}">Description</div>
             </div>
 
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-sm-3"><strong>Priority:</strong></div>
                 <div class="col-sm-9" th:text="${habit.priority ?: 'Not set'}">Priority</div>
             </div>
 
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-sm-3"><strong>Start Date:</strong></div>
                 <div class="col-sm-9" th:text="${habit.startDate ?: 'Not set'}">Start Date</div>
             </div>
 
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-sm-3"><strong>Frequency Type:</strong></div>
                 <div class="col-sm-9" th:text="${habit.frequencyType ?: 'Not set'}">Frequency Type</div>
             </div>
 
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-sm-3"><strong>Frequency Value:</strong></div>
                 <div class="col-sm-9" th:text="${habit.frequencyValue ?: 'Not set'}">Frequency Value</div>
             </div>
 
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-sm-3"><strong>Associated Goal:</strong></div>
                 <div class="col-sm-9" th:text="${habit.goal?.name ?: 'No goal assigned'}">Goal</div>
             </div>
 
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-sm-3"><strong>Category:</strong></div>
                 <div class="col-sm-9" th:text="${habit.category?.name ?: 'No category assigned'}">Category</div>
             </div>
-
         </div>
     </div>
 
+    <!-- Quick stats -->
+    <div class="row g-3 mt-3 mb-2">
+        <div class="col-12 col-md-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Current streak</div>
+                    <div class="fs-3 fw-bold" th:text="${currentStreak}">0</div>
+                    <div class="small text-muted">days</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Longest streak (this year)</div>
+                    <div class="fs-3 fw-bold" th:text="${longestStreak}">0</div>
+                    <div class="small text-muted">days</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="text-muted small">This month done</div>
+                    <div class="fs-3 fw-bold" th:text="${doneCountMonth}">0</div>
+                    <div class="small text-muted" th:text="${#numbers.formatDecimal(completionRateMonth, 1, 1)} + ' %'">0 %</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly overview (read-only) -->
+    <div class="d-flex align-items-center gap-2 mt-2 mb-2">
+        <a class="btn btn-outline-secondary"
+           th:href="@{/habits/{id}(id=${habit.id}, year=${#temporals.year(prevMonthFirst)}, month=${#temporals.month(prevMonthFirst)})}">
+            ← Prev month
+        </a>
+
+        <h4 class="flex-grow-1 text-center mb-0" th:text="${monthHeadline}">Month YYYY</h4>
+
+        <span th:if="${nextDisabled}" class="btn btn-outline-secondary disabled"
+              aria-disabled="true" tabindex="-1">Next month →</span>
+        <a th:if="${!nextDisabled}" class="btn btn-outline-secondary"
+           th:href="@{/habits/{id}(id=${habit.id}, year=${#temporals.year(nextMonthFirst)}, month=${#temporals.month(nextMonthFirst)})}">
+            Next month →
+        </a>
+
+        <a class="btn btn-outline-primary"
+           th:href="@{/habits/{id}(id=${habit.id})}">
+            This month
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>Day</th>
+                <th th:each="d : ${monthDays}"
+                    class="text-center"
+                    th:text="${#temporals.day(d)}">1</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th>Status</th>
+                <td th:each="d : ${monthDays}"
+                    th:classappend="${d.equals(today)} ? 'table-primary' : ''"
+                    class="text-center">
+                    <span th:text="${monthStatus.get(d)} ? 'X' : ''"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Year overview -->
+    <div class="mt-4">
+        <h5 th:text="'Year ' + ${yearOfStats} + ' overview'">Year YYYY overview</h5>
+        <div class="row g-2">
+            <div class="col-6 col-md-3" th:each="i : ${#numbers.sequence(0,11)}">
+                <div class="border rounded p-2">
+                    <div class="small text-muted"
+                         th:text="${#temporals.format(#temporals.create(yearOfStats, i + 1, 1), 'MMMM')}">
+                        Month
+                    </div>
+                    <div class="fw-bold"
+                         th:text="${monthlyDoneCounts[i]} + ' / ' + ${monthlyTotals[i]}">0 / 0</div>
+                    <div class="progress mt-1" style="height: 6px;">
+                        <div class="progress-bar"
+                             role="progressbar"
+                             th:style="'width:' + (${monthlyTotals[i]} == 0 ? 0 : (${monthlyDoneCounts[i]} * 100 / ${monthlyTotals[i]})) + '%'"
+                             aria-valuemin="0"
+                             th:aria-valuenow="${monthlyDoneCounts[i]}"
+                             th:aria-valuemax="${monthlyTotals[i]}">
+                        </div>
+                    </div>
+                    <a class="btn btn-link btn-sm p-0 mt-1"
+                       th:if="${!monthIsFuture[i]}"
+                       th:href="@{/habits/{id}(id=${habit.id}, year=${yearOfStats}, month=${i+1})}">
+                        Open month in above Diagram
+                    </a>
+                    <span class="btn btn-link btn-sm p-0 mt-1 disabled"
+                          th:if="${monthIsFuture[i]}"
+                          aria-disabled="true" tabindex="-1">
+                      Open month in above Diagram
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
     <div class="mt-4">
         <a th:href="@{/habits}" class="btn btn-secondary">Back to Habits</a>
 
@@ -54,10 +172,7 @@
               class="d-inline ms-2"
               th:data-habit-name="${habit.name}"
               onsubmit="return confirm('Are you sure to delete the habit: ' + this.dataset.habitName + ' ?');">
-
-            <button type="submit" class="btn btn-danger">
-                Delete
-            </button>
+            <button type="submit" class="btn btn-danger">Delete</button>
         </form>
     </div>
 </div>
