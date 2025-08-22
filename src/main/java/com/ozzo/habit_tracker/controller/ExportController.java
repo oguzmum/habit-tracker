@@ -4,19 +4,31 @@ import com.ozzo.habit_tracker.entity.Habit;
 import com.ozzo.habit_tracker.service.HabitService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
+
+
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
+import org.thymeleaf.context.Context;
+
+import java.io.OutputStream;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @RestController
 @RequestMapping("/export")
 public class ExportController {
 
     private final HabitService habitService;
+    private final SpringTemplateEngine templateEngine;
 
-    public ExportController(HabitService habitService) {
+    public ExportController(HabitService habitService, SpringTemplateEngine templateEngine) {
         this.habitService = habitService;
+        this.templateEngine = templateEngine;
     }
 
     @GetMapping(value = "/habits/month.csv", produces = "text/csv")
@@ -71,6 +83,62 @@ public class ExportController {
             w.flush();
         }
     }
+
+    @GetMapping(value = "/habits/month.pdf", produces = "application/pdf")
+    public void exportMonthlyPdf(
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month,
+            HttpServletResponse response
+    ) throws Exception {
+
+        LocalDate today = LocalDate.now();
+        int y = (year == null) ? today.getYear() : year;
+        int m = (month == null) ? today.getMonthValue() : month;
+        if (m < 1 || m > 12) m = today.getMonthValue();
+
+        LocalDate first = LocalDate.of(y, m, 1);
+        int daysInMonth = first.lengthOfMonth();
+
+        List<LocalDate> monthDays = new ArrayList<>(daysInMonth);
+        for (int d = 1; d <= daysInMonth; d++) {
+            monthDays.add(first.withDayOfMonth(d));
+        }
+
+        List<Habit> habits = habitService.findAll();
+        Map<Long, Map<LocalDate, Boolean>> habitMonthStatus = new HashMap<>();
+        for (Habit h : habits) {
+            Map<LocalDate, Boolean> perDay = new HashMap<>();
+            for (LocalDate d : monthDays) {
+                perDay.put(d, habitService.isHabitDoneAtDate(h.getId(), d));
+            }
+            habitMonthStatus.put(h.getId(), perDay);
+        }
+
+        String headline = first.format(DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH));
+
+        Context ctx = new Context(Locale.ENGLISH);
+        ctx.setVariable("monthHeadline", headline);
+        ctx.setVariable("monthDays", monthDays);
+        ctx.setVariable("habits", habits);
+        ctx.setVariable("habitMonthStatus", habitMonthStatus);
+        ctx.setVariable("today", today);
+
+        String html = templateEngine.process("export-month", ctx);
+
+        String filename = String.format("habits-%d-%02d.pdf", y, m);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+        response.setContentType("application/pdf");
+
+        try (OutputStream os = response.getOutputStream()) {
+            PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.useFastMode();
+            builder.withHtmlContent(html, null);
+            builder.toStream(os);
+            builder.run();
+        }
+    }
+
 
     private static String quote(String s, String delimiter) {
         if (s == null) return "";

@@ -1,0 +1,54 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${monthHeadline}">Habits</title>
+    <style>
+        @page { size: A4 landscape; margin: 12mm; }
+
+        body { font-family: Arial, sans-serif; font-size: 10pt; }
+
+        h1 { text-align: center; margin: 0 0 8px 0; font-size: 16pt; }
+
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th, td { border: 1px solid #555; padding: 2px 3px; text-align: center; }
+
+        thead th { background: #f2f2f2; }
+
+        .habit-head, .habit-cell {
+          text-align: left;
+          white-space: normal;
+          word-break: break-word;
+          overflow-wrap: anywhere;
+        }
+    </style>
+</head>
+<body>
+<h1 th:text="${monthHeadline}">August 2025</h1>
+
+<table>
+    <colgroup>
+        <col class="habit-col" style="width: 60mm;" />
+        <col class="day-col" style="width: 6.5mm;" th:each="d : ${monthDays}" />
+    </colgroup>
+
+    <thead>
+    <tr>
+        <th class="habit-head">Habit</th>
+        <th th:each="d : ${monthDays}" th:text="${#temporals.day(d)}">1</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="h : ${habits}">
+        <th class="habit-cell" th:text="${h.name}">Habit Name</th>
+        <td th:each="d : ${monthDays}"
+            th:classappend="${d.equals(today)} ? 'today' : ''"
+            th:text="${habitMonthStatus.get(h.id)?.get(d)} ? 'X' : ''">
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

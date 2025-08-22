@@ -27,6 +27,14 @@
             Export CSV
         </a>
 
+        <a class="btn btn-outline-secondary"
+           th:href="@{/export/habits/month.pdf(
+               year=${#temporals.year(monthDays[0])},
+               month=${#temporals.month(monthDays[0])})}">
+            Export PDF
+        </a>
+
+
     </div>
 
     <div class="table-responsive">
