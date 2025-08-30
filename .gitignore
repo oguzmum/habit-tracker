@@ -41,3 +41,4 @@ HELP.md
 
 ### Docker ###
 Docker/.env
+*habittracker-db.sql
