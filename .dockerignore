@@ -1,0 +1,7 @@
+.git
+target
+Docker/*.sh
+Docker/docker-compose.yml
+*.md
+**/.idea
+**/.vscode

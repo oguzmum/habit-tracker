@@ -11,4 +11,3 @@ WORKDIR /app
 
 COPY --from=builder /app/target/*.jar habit-tracker.jar
 ENTRYPOINT ["java", "-jar", "habit-tracker.jar"]
-# CMD ["java", "-jar", "habit-tracker.jar"]
