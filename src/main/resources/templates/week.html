@@ -31,12 +31,16 @@
       <tr th:each="h : ${habits}">
         <th th:text="${h.name}"></th>
 
-        <td th:each="day : ${weekDays}" class="text-center">
+        <td th:each="day : ${weekDays}"
+            class="text-center"
+            th:classappend="${day.isAfter(today)} ? 'opacity-50'">
           <input type="checkbox"
                  class="form-check-input"
                  th:data-id="${h.id}"
                  th:data-date="${#temporals.format(day, 'yyyy-MM-dd')}"
                  th:checked="${habitWeekStatus.get(h.id)?.get(day)}"
+                 th:disabled="${day.isAfter(today)}"
+                 th:attr="title=${day.isAfter(today)} ? 'Zukünftiger Tag – nicht anklickbar' : null"
                  onchange="toggleHabitDoneAtDate(this)" />
         </td>
       </tr>

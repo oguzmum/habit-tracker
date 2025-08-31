@@ -145,6 +145,7 @@ public class HabitViewController {
                 weekDays.getLast().format(DateTimeFormatter.ofPattern("dd.MM."))
         );
 
+        model.addAttribute("today", today);
         model.addAttribute("weekHeadline", headline);
         model.addAttribute("weekDays", weekDays);
         model.addAttribute("prevWeekDate", prevWeekDate);

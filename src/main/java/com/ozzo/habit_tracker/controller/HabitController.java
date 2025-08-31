@@ -44,6 +44,10 @@ public class HabitController {
             @RequestParam Boolean completed) {
 
         LocalDate date = LocalDate.parse(dateStr);
+        LocalDate today = LocalDate.now();
+        if (date.isAfter(today)) {
+            return ResponseEntity.status(403).build();
+        }
 
         if (completed) {
             habitService.markHabitAsDone(habitId, date);
