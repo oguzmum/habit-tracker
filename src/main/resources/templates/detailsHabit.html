@@ -166,6 +166,7 @@
     <!-- Actions -->
     <div class="mt-4">
         <a th:href="@{/habits}" class="btn btn-secondary">Back to Habits</a>
+        <a th:href="@{/habits/{id}/edit(id=${habit.id})}" class="btn btn-primary">Edit</a>
 
         <form th:action="@{/habits/delete/{id}(id=${habit.id})}"
               method="post"

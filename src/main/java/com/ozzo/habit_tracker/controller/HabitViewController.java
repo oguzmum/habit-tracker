@@ -408,13 +408,47 @@ public class HabitViewController {
     }
 
 
-
-
-
     @PostMapping("/habits/delete/{id}")
     public String deleteGoal(@PathVariable Long id) {
         habitService.deleteById(id);
         return "redirect:/habits";
+    }
+
+
+    @GetMapping("/habits/{id}/edit")
+    public String editHabit(@PathVariable Long id, Model model) {
+        Habit habit = habitService.findById(id);
+        model.addAttribute("habit", habit);
+        model.addAttribute("goals", goalService.findAll());
+        model.addAttribute("categories", categoryService.findAll());
+        model.addAttribute("newPage", "editHabit"); // eigene HTML-Partialsicht
+        return "index";
+    }
+
+    @PostMapping("/habits/{id}")
+    public String updateHabit(@PathVariable Long id, @ModelAttribute("habit") Habit habitForm) {
+        Habit habitDb = habitService.findById(id);
+
+        habitDb.setName(habitForm.getName());
+        habitDb.setDescription(habitForm.getDescription());
+        habitDb.setPriority(habitForm.getPriority());
+        habitDb.setStartDate(habitForm.getStartDate());
+        habitDb.setFrequencyType(habitForm.getFrequencyType());
+        habitDb.setFrequencyValue(habitForm.getFrequencyValue());
+
+        if (habitForm.getGoal() != null && habitForm.getGoal().getId() != null) {
+            habitDb.setGoal(goalService.findById(habitForm.getGoal().getId()));
+        } else {
+            habitDb.setGoal(null);
+        }
+        if (habitForm.getCategory() != null && habitForm.getCategory().getId() != null) {
+            habitDb.setCategory(categoryService.findById(habitForm.getCategory().getId()));
+        } else {
+            habitDb.setCategory(null);
+        }
+
+        habitService.save(habitDb);
+        return "redirect:/habits/" + id;
     }
 
 

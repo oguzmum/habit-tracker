@@ -5,6 +5,8 @@
         <li th:each="h, stat : ${habits}" class="mb-2 d-flex align-items-center">
 
             <a th:href="@{/habits/{id}(id=${h.id})}" th:text="${h.name}" class="btn btn-link p-0"></a>
+            <a th:href="@{/habits/{id}/edit(id=${h.id})}" class="btn btn-sm btn-outline-primary ms-2">Edit</a>
+
 
             <form th:action="@{/habits/delete/{id}(id=${h.id})}"
                   method="post"
