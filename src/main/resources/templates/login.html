@@ -16,19 +16,36 @@
                     <div class="alert alert-danger" th:if="${param.error}">
                         Username or Password is wrong.
                     </div>
-                    <form th:action="@{/login}" method="post">
+                    <form th:action="@{/login}" method="post"
+                          th:classappend="${needsAdmin} ? ' pe-none opacity-50' : ''">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
                         <div class="mb-3">
                             <label class="form-label" for="username">Username</label>
-                            <input class="form-control" type="text" id="username" name="username" required autofocus />
+                            <input class="form-control" id="username" name="username" required autofocus
+                                   th:readonly="${needsAdmin}" />
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label" for="password">Password</label>
-                            <input class="form-control" type="password" id="password" name="password" required />
+                            <input class="form-control" id="password" name="password" type="password" required
+                                   th:readonly="${needsAdmin}" />
                         </div>
+
                         <div class="d-grid">
-                            <button class="btn btn-primary" type="submit">Login</button>
+                            <button class="btn btn-primary" type="submit"
+                                    th:classappend="${needsAdmin} ? ' disabled' : ''"
+                                    th:attr="aria-disabled=${needsAdmin},tabindex=${needsAdmin} ? -1 : null">
+                                Login
+                            </button>
                         </div>
                     </form>
+
+                    <div class="alert alert-info" th:if="${needsAdmin}">
+                        No User exists. Please setup an Admin via environment variables
+                        (<code>APP_ADMIN_USERNAME</code>, <code>APP_ADMIN_PASSWORD</code>) and restart the app.
+                    </div>
+
                 </div>
             </div>
         </div>

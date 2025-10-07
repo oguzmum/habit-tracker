@@ -8,8 +8,3 @@ CREATE TABLE public.app_users (
     enabled  BOOLEAN NOT NULL DEFAULT TRUE,
     role     VARCHAR(255) NOT NULL
 );
-
-INSERT INTO public.app_users (username, password, enabled, role)
-VALUES ('admin', '${admin_password_hash}', TRUE, 'ROLE_ADMIN');
-
--- admin_password_hash is set via properties files in spring.flyway.placeholders.admin_password_hash
