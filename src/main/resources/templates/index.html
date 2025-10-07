@@ -1,20 +1,24 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="de">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <title>Habit Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link th:href="@{/styles/layout.css}" rel="stylesheet" />
-
 </head>
 <body>
     <div class="page-container">
         <!-- Sidebar -->
-        <aside class="sidebar d-flex flex-column align-items-center py-4">
-    <!--        <div class="avatar rounded-circle border d-flex justify-content-center align-items-center mb-4">-->
-    <!--            <span style="font-size: 2rem;">&#128100;</span>-->
-    <!--        </div>-->
+        <aside class="sidebar d-flex flex-column align-items-center py-4" sec:authorize="isAuthenticated()">
+            <div class="w-100 px-3 mb-4 d-flex justify-content-between align-items-center">
+                <span class="fw-semibold" sec:authentication="name"></span>
+                <form th:action="@{/logout}" method="post">
+                    <button class="btn" type="submit">Logout</button>
+                </form>
+            </div>
             <nav class="nav flex-column text-center w-100 gap-3">
                 <!-- Clicking this link triggers an HTTP GET request to /goals.
                  Spring’s DispatcherServlet will route that request to
