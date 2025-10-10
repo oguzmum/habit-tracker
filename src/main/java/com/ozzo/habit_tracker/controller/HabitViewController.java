@@ -50,7 +50,9 @@ public class HabitViewController {
     @GetMapping("/habits/new-page")
     public String showNewHabitForm(Model model) {
         //new Habit that will created with parameters as its being defined by the user in the UI :D
-        model.addAttribute("habit", new Habit());
+        Habit habit = new Habit();
+        habit.setStartDate(LocalDate.now());
+        model.addAttribute("habit", habit);
         model.addAttribute("goals", goalService.findAll());
         model.addAttribute("categories", categoryService.findAll());
         model.addAttribute("newPage", "addNewHabit");
