@@ -5,4 +5,30 @@
     <div class="mt-4 d-flex align-items-center gap-3">
         <a class="btn btn-primary" th:href="@{/backup/download}">Download Backup</a>
     </div>
+
+    <div class="mt-4">
+        <h3>Import Backup</h3>
+        <p>Select a previously exported JSON backup file to merge its content with your current data. Existing entries will be kept.</p>
+
+        <div th:if="${importError}" class="alert alert-danger" th:text="${importError}"></div>
+
+        <div th:if="${importResult}" class="alert alert-success">
+            <p th:text="${importResult.hasImportedAnything()} ? 'Backup successfully imported.' : 'No new Data imported.'"></p>
+            <ul class="mb-0">
+                <li th:text="|Categories imported: ${importResult.categoriesImported()} (skipped: ${importResult.categoriesSkipped()})|"></li>
+                <li th:text="|Goals imported: ${importResult.goalsImported()} (skipped: ${importResult.goalsSkipped()})|"></li>
+                <li th:text="|Habit imported: ${importResult.habitsImported()} (skipped: ${importResult.habitsSkipped()})|"></li>
+                <li th:text="|Completed entries imported: ${importResult.habitEntriesImported()} (skipped: ${importResult.habitEntriesSkipped()})|"></li>
+            </ul>
+        </div>
+
+        <form class="mt-3" th:action="@{/backup/import}" method="post" enctype="multipart/form-data">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <div class="mb-3">
+                <label class="form-label" for="backupFile">Backup-File (JSON)</label>
+                <input class="form-control" type="file" id="backupFile" name="file" accept="application/json" required>
+            </div>
+            <button class="btn btn-secondary" type="submit">Start Import</button>
+        </form>
+    </div>
 </div>
