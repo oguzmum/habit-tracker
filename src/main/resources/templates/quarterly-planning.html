@@ -1,0 +1,285 @@
+<div th:fragment="content" class="planning-scope">
+    <style>
+        .planning-scope {
+          --bg: #ffffff;
+          --text: #111111;
+          --muted: #6a6d75;
+          --grid: #111111;         /* Tabellenlinien */
+          --panel: #ffffff;        /* Karten-Hintergrund */
+          --panel-border: #e5e7eb; /* Karten-Rand hell */
+          --input-bg: #ffffff;     /* Input-Felder */
+          --input-border: #d1d5db; /* Input-Rand */
+          --dash-border: #e5e7eb;  /* gestrichelte UA-Boxen */
+          --hover: #f3f4f6;        /* Button-Hover */
+        }
+        /* Box-Sizing + Overflow-Grundlage */
+        .planning-scope, .planning-scope * , .planning-scope *::before, .planning-scope *::after {
+          box-sizing: border-box;
+        }
+
+        /* --- Layout & Typo --- */
+        .planning-scope .wrap {
+          max-width: 1200px;
+          margin: auto;
+          padding: 24px;
+          background: var(--bg);
+          color: var(--text);
+          font-family: system-ui, Segoe UI, Roboto, Inter, Arial, sans-serif;
+        }
+        .planning-scope h1 { margin: 0 0 14px 0; font-size: 22px; }
+        .planning-scope .hint { color: var(--muted); margin-bottom: 14px; font-size: 14px; }
+
+        /* --- Tabelle --- */
+        .planning-scope table.planning {
+          width: 100%;
+          border-collapse: collapse;
+          table-layout: fixed;
+          border: 2px solid var(--grid);
+          background: var(--bg);
+        }
+        .planning-scope .planning td {
+          border: 1.5px solid var(--grid);
+          vertical-align: top;
+          padding: 10px;
+          background: var(--bg);
+          overflow: visible;       /* Buttons nicht abschneiden */
+        }
+        .planning-scope .planning td > * { max-width: 100%; }
+
+        /* Label-Spalte */
+        .planning-scope .label-cell{
+          width: 180px;
+          font-family: ui-serif, Georgia, serif;
+          font-size: 22px;
+          color: var(--text);
+          background: #fafafa;
+          letter-spacing: .5px;
+          border-right: 1.5px solid var(--grid);
+        }
+
+        /* --- Year row merged --- */
+        .planning-scope .year-row .year-cell { padding: 10px; }
+        .planning-scope .year-grid {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr)); /* minmax(0,1fr) verhindert Überlauf */
+          gap: 12px;
+        }
+
+        /* --- Karten/Zellen --- */
+        .planning-scope .cell,
+        .planning-scope .card{
+          background: var(--panel);
+          border: 1px solid var(--panel-border);
+          border-radius: 12px;
+          padding: 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          width: 100%;
+          max-width: 100%;
+          min-width: 0; /* darf schrumpfen */
+        }
+
+        .planning-scope .cell-header,
+        .planning-scope .card-header{
+          display: flex;
+          gap: 8px;
+          align-items: center;
+          min-width: 0; /* verhindert Überlauf durch breiten Input */
+        }
+
+        .planning-scope .cell-title,
+        .planning-scope .card-title{
+          flex: 1 1 auto;
+          min-width: 0;                 /* wichtig für Flex-Schrumpfen */
+          background: var(--input-bg);
+          border: 1px solid var(--input-border);
+          color: var(--text);
+          padding: 8px 10px;
+          border-radius: 10px;
+          font-weight: 600;
+          position: relative;
+          z-index: 1;
+        }
+
+        /* --- Buttons --- */
+        .planning-scope .btn{
+          background: #fff;
+          color: var(--text);
+          border: 1px solid var(--grid);
+          border-radius: 8px;
+          padding: 6px 10px;
+          cursor: pointer;
+          font-size: 13px;
+          position: relative;
+          z-index: 2; /* über Inputs */
+        }
+        .planning-scope .btn.small{ padding: 4px 8px; font-size: 12px; }
+        .planning-scope .btn.danger{ border-color: #ef4444; }
+        .planning-scope .btn:hover{ background: var(--hover); }
+
+        /* --- Unteraufgaben --- */
+        .planning-scope .items{ display: flex; flex-direction: column; gap: 6px; }
+        .planning-scope .item{
+          display: grid;
+          grid-template-columns: auto 1fr auto;
+          gap: 8px;
+          align-items: center;
+          padding: 6px 8px;
+          border: 1px dashed var(--dash-border);
+          border-radius: 8px;
+          background: #fff;
+        }
+        .planning-scope .item input[type="text"]{
+          width: 100%;
+          min-width: 0;   /* darf schrumpfen */
+          background: transparent;
+          border: none;
+          color: var(--text);
+          outline: none;
+          font-size: 14px;
+          padding: 4px 2px;
+        }
+
+        /* --- Responsiv --- */
+        @media (max-width: 1000px){
+          .planning-scope .year-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 620px){
+          .planning-scope .year-grid { grid-template-columns: minmax(0, 1fr); }
+          .planning-scope .label-cell{ width: 120px; font-size: 18px; }
+        }
+    </style>
+
+
+    <div class="wrap">
+        <h1>Ziele - Quartelsplanung</h1>
+
+        <table class="planning" id="planTable">
+            <tbody>
+            <tr class="year-row">
+                <td class="label-cell">Jahr</td>
+                <td class="year-cell" colspan="4">
+                    <div class="year-toolbar" style="margin-bottom:8px;">
+                        <button class="btn small" data-action="add-card">+ Top-Ziel</button>
+                    </div>
+                    <div class="year-grid" id="yearGrid"></div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="label-cell">Quartal</td>
+                <td data-section="quarter" data-col="1"></td>
+                <td data-section="quarter" data-col="2"></td>
+                <td data-section="quarter" data-col="3"></td>
+                <td data-section="quarter" data-col="4"></td>
+            </tr>
+
+            <tr>
+                <td class="label-cell">Monat</td>
+                <td data-section="month1" data-col="1"></td>
+                <td data-section="month1" data-col="2"></td>
+                <td data-section="month1" data-col="3"></td>
+                <td data-section="month1" data-col="4"></td>
+            </tr>
+            <tr>
+                <td class="label-cell">Monat</td>
+                <td data-section="month2" data-col="1"></td>
+                <td data-section="month2" data-col="2"></td>
+                <td data-section="month2" data-col="3"></td>
+                <td data-section="month2" data-col="4"></td>
+            </tr>
+            <tr>
+                <td class="label-cell">Monat</td>
+                <td data-section="month3" data-col="1"></td>
+                <td data-section="month3" data-col="2"></td>
+                <td data-section="month3" data-col="3"></td>
+                <td data-section="month3" data-col="4"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Templates -->
+    <template id="cell-template">
+        <div class="cell">
+            <div class="cell-header">
+                <input class="cell-title" placeholder="Titel des Ziels …" />
+                <button class="btn small" data-action="add-item">+ UA</button>
+                <button class="btn small danger" data-action="clear-cell" title="Alle Unteraufgaben leeren">🗑</button>
+            </div>
+            <div class="items"></div>
+        </div>
+    </template>
+
+    <template id="card-template">
+        <div class="card">
+            <div class="card-header">
+                <input class="card-title" placeholder="Top-Jahresziel …" />
+                <button class="btn small" data-action="add-item">+ UA</button>
+                <button class="btn small danger" data-action="remove-card" title="Karte löschen">🗑</button>
+            </div>
+            <div class="items"></div>
+        </div>
+    </template>
+
+    <template id="item-template">
+        <div class="item">
+            <input type="checkbox" />
+            <input type="text" placeholder="Subgoal / -task" />
+            <button class="btn small danger" data-action="remove-item">✕</button>
+        </div>
+    </template>
+
+    <script>
+        const $ = (s, r=document)=>r.querySelector(s);
+        const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+        const tpl = id => document.getElementById(id).content.firstElementChild.cloneNode(true);
+
+        function makeItems(container, n=3){ for(let i=0;i<n;i++) container.appendChild(tpl('item-template')); }
+
+        function populateCell(td, title, items=3){
+          const node = tpl('cell-template');
+          node.querySelector('.cell-title').value = title;
+          makeItems(node.querySelector('.items'), items);
+          td.appendChild(node);
+        }
+
+        function addYearCard(title="Top-Jahresziel", items=3){
+          const grid = $('#yearGrid');
+          const card = tpl('card-template');
+          card.querySelector('.card-title').value = title;
+          makeItems(card.querySelector('.items'), items);
+          grid.appendChild(card);
+        }
+
+        function init(){
+          ["Top Jahresziel 1","Top Jahresziel 2","Top Jahresziel 3","Top Jahresziel 4"].forEach(t => addYearCard(t, 3));
+
+          ["Quartalsziel 1","Quartalsziel 2","Quartalsziel 3","Quartalsziel 4"]
+            .forEach((t,i)=> populateCell($$('#planTable td[data-section="quarter"]')[i], t, 3));
+
+          ["month1","month2","month3"].forEach((sec, r)=>{
+            $$('#planTable td[data-section="'+sec+'"]').forEach((td, c)=>{
+              populateCell(td, `Monatsziel ${r+1}.${c+1}`, 3);
+            });
+          });
+        }
+
+        document.addEventListener('click', (e)=>{
+          const btn = e.target.closest('button'); if(!btn) return;
+          const act = btn.dataset.action;
+
+          if(act === 'add-item'){
+            const holder = btn.closest('.cell, .card').querySelector('.items');
+            holder.appendChild(tpl('item-template'));
+          }
+          if(act === 'remove-item'){ btn.closest('.item').remove(); }
+          if(act === 'clear-cell'){ btn.closest('.cell').querySelector('.items').innerHTML=''; }
+          if(act === 'remove-card'){ btn.closest('.card').remove(); }
+          if(act === 'add-card'){ addYearCard(`Top Jahresziel ${$('#yearGrid').children.length+1}`, 3); }
+        });
+
+        init();
+    </script>
+</div>

@@ -61,5 +61,10 @@ public class GoalsViewController {
         return "redirect:/goals";
     }
 
+    @GetMapping("/quarterly-planning")
+    public String showQuarterPlanning(Model model){
+        model.addAttribute("newPage", "quarterly-planning");
+        return "index";
+    }
 
 }
