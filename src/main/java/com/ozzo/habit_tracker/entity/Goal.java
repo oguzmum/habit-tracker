@@ -1,6 +1,8 @@
 package com.ozzo.habit_tracker.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,23 @@ public class Goal {
     @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Habit> habits = new ArrayList<>();
 
+    private Integer year;
+
+    @Min(0)
+    @Max(100)
+    @Column(name = "progress")
+    private Integer progress = 0;
+
+    @Min(0)
+    @Max(10)
+    private Integer priority;
+
+    @Column(name = "done", nullable = false)
+    private boolean done = false;
+
+    @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SubGoal> subGoals = new ArrayList<>();
+
     public Goal() {}
 
     public Goal(String name, String description) {
@@ -39,4 +58,27 @@ public class Goal {
 
     public List<Habit> getHabits() { return habits; }
     public void setHabits(List<Habit> habits) { this.habits = habits; }
+
+    public Integer getYear() { return year; }
+    public void setYear(Integer year){ this.year = year; }
+
+    public Integer getProgress() { return progress; }
+    public void setProgress(Integer progress) { this.progress = progress; }
+
+    public Integer getPriority() { return priority; }
+    public void setPriority(Integer priority) { this.priority = priority; }
+
+    public boolean getDone() { return done; }
+    public void setDone() { this.done = done; }
+
+    public List<SubGoal> getSubGoals() { return subGoals; }
+    public void setSubGoals(List<SubGoal> subGoals) { this.subGoals = subGoals; }
+    public void addSubGoal(SubGoal sg) {
+        subGoals.add(sg);
+        sg.setGoal(this);
+    }
+    public void removeSubGoal(SubGoal sg) {
+        subGoals.remove(sg);
+        sg.setGoal(null);
+    }
 }
