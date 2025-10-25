@@ -4,8 +4,9 @@ import com.ozzo.habit_tracker.entity.Goal;
 import com.ozzo.habit_tracker.repository.GoalRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Service
 public class GoalService {
@@ -31,5 +32,11 @@ public class GoalService {
 
     public void deleteById(Long id){
         goalRepository.deleteById(id);
+    }
+
+    public Set<Integer> collectAvailableYears() {
+        Set<Integer> years = new TreeSet<>((a, b) -> b.compareTo(a));
+        years.addAll(goalRepository.findDistinctYears());
+        return years;
     }
 }

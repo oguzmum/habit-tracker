@@ -167,6 +167,71 @@
                 </td>
             </tr>
 
+
+
+            <tr class="top-year-goals-row">
+                <td class="label-cell">Top-Jahresziele [[${selectedYear}]]</td>
+                <td class="year-cell" colspan="4">
+                    <div th:if="${#lists.isEmpty(topYearGoals)}" class="muted">
+                        Keine Top-Jahresziele für [[${selectedYear}]] hinterlegt.
+                    </div>
+
+                    <div th:each="g : ${topYearGoals}" class="goal-card" style="margin-bottom:12px; padding:12px; border:1px solid #eee; border-radius:10px;">
+                        <div style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
+                            <h3 style="margin:0;" th:text="${g.name}">Zielname</h3>
+                            <!-- optional: Link zur Detailseite -->
+                            <a th:href="@{/goals/{id}(id=${g.id})}" class="btn small">Details</a>
+                        </div>
+                        <p th:if="${g.description}" class="muted" th:text="${g.description}">Beschreibung…</p>
+
+                        <!-- Subgoals-Liste -->
+                        <div th:with="subs=${subGoalsByGoal[g.id]}">
+                            <ul th:if="${subs != null and !#lists.isEmpty(subs)}" style="margin:8px 0 0 16px;">
+                                <li th:each="sg : ${subs}">
+                                    <span th:text="${sg.name}">Subgoal</span>
+                                    <!-- Optional: Labels zu Quarter/Month -->
+                                    <span class="muted" th:if="${sg.quarter != null}">
+              — [[${quarterLabels[sg.quarter.name()]}]]
+            </span>
+                                    <span class="muted" th:if="${sg.month != null}">
+              — [[${monthLabels[sg.month.name()]}]]
+            </span>
+                                    <!-- Optional: Edit/Delete Actions -->
+                                    <!--
+                                    <form th:action="@{/subgoals/delete/{id}(id=${sg.id})}" method="post" style="display:inline;">
+                                      <input type="hidden" name="year" th:value="${selectedYear}"/>
+                                      <button class="link danger" type="submit">Löschen</button>
+                                    </form>
+                                    -->
+                                </li>
+                            </ul>
+
+                            <p class="muted" th:if="${subs == null or #lists.isEmpty(subs)}">
+                                Dieses Ziel hat keine Subgoals.
+                            </p>
+                        </div>
+
+                        <!-- Optional: Formular zum schnellen Anlegen eines Subgoals für dieses Ziel -->
+                        <!--
+                        <form th:action="@{/subgoals/create}" method="post" style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+                          <input type="text" name="name" placeholder="Neues Subgoal…" required class="input">
+                          <input type="hidden" name="goalId" th:value="${g.id}">
+                          <input type="hidden" name="year" th:value="${selectedYear}">
+                          <select name="quarter">
+                            <option th:each="q : ${quarters}" th:value="${q}" th:text="${quarterLabels[q.name()]}">Quartal</option>
+                          </select>
+                          <select name="month">
+                            <option value="">(Monat optional)</option>
+                            <option th:each="m : ${monthLabels.entrySet()}" th:value="${m.key}" th:text="${m.value}">Monat</option>
+                          </select>
+                          <button class="btn small" type="submit">+ Subgoal</button>
+                        </form>
+                        -->
+                    </div>
+                </td>
+            </tr>
+
+
             <tr>
                 <td class="label-cell">Quartal</td>
                 <td data-section="quarter" data-col="1"></td>
