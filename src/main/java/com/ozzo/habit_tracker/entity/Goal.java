@@ -71,10 +71,10 @@ public class Goal {
     public Integer getPriority() { return priority; }
     public void setPriority(Integer priority) { this.priority = priority; }
 
-    public boolean getDone() { return done; }
+    public boolean isDone() { return done; }
     public void setDone() { this.done = done; }
 
-    public boolean getTopYeaGoal() { return topYearGoal; }
+    public boolean isTopYeaGoal() { return topYearGoal; }
     public void setTopYeaGoal() { this.topYearGoal = topYearGoal; }
 
     public List<SubGoal> getSubGoals() { return subGoals; }
