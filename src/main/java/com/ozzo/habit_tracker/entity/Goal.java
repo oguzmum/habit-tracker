@@ -74,8 +74,8 @@ public class Goal {
     public boolean isDone() { return done; }
     public void setDone() { this.done = done; }
 
-    public boolean isTopYeaGoal() { return topYearGoal; }
-    public void setTopYeaGoal() { this.topYearGoal = topYearGoal; }
+    public boolean isTopYearGoal() { return topYearGoal; }
+    public void setTopYearGoal() { this.topYearGoal = topYearGoal; }
 
     public List<SubGoal> getSubGoals() { return subGoals; }
     public void setSubGoals(List<SubGoal> subGoals) { this.subGoals = subGoals; }
