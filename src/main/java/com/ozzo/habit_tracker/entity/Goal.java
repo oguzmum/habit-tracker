@@ -37,6 +37,9 @@ public class Goal {
     @Column(name = "done", nullable = false)
     private boolean done = false;
 
+    @Column(name= "top_year_goal", nullable = false)
+    private boolean topYearGoal = false;
+
     @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubGoal> subGoals = new ArrayList<>();
 
@@ -70,6 +73,9 @@ public class Goal {
 
     public boolean getDone() { return done; }
     public void setDone() { this.done = done; }
+
+    public boolean getTopYeaGoal() { return topYearGoal; }
+    public void setTopYeaGoal() { this.topYearGoal = topYearGoal; }
 
     public List<SubGoal> getSubGoals() { return subGoals; }
     public void setSubGoals(List<SubGoal> subGoals) { this.subGoals = subGoals; }
