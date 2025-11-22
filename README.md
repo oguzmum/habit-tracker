@@ -15,6 +15,18 @@ If no controller explicitly maps the root path (`/`), Spring Boot will automatic
 
 ---
 
+## Changes mid development
+
+- noticed that I'm not really using the digital tracker in the way I planned, mainly because I'm more of an analog person when it comes to habit tracking
+
+- decided to keep the existing functionality as-is, but adjust the workflow to match how I naturally track habits
+
+- plan: track everything on paper first, like I already do in my physical planner
+
+- at the end of each month I'll take a photo of the filled-in habit tracker page and upload it to the app
+
+- **implement an image-recognition pipeline** that processes the uploaded image, detects which cells are marked, and generates the corresponding habit entries automatically
+---
 
 ## Deployment
 
