@@ -234,10 +234,53 @@
 
             <tr>
                 <td class="label-cell">Quartal</td>
-                <td data-section="quarter" data-col="1"></td>
-                <td data-section="quarter" data-col="2"></td>
-                <td data-section="quarter" data-col="3"></td>
-                <td data-section="quarter" data-col="4"></td>
+
+                <!-- Vier Spalten: Q1..Q4 -->
+                <td th:each="q : ${quarters}">
+                    <div class="cell">
+                        <div class="cell-header">
+                            <div class="cell-title" th:text="${quarterLabels[q.name()]}">Quartal X</div>
+                            <!-- Optional: Quick-Add-Form für Subgoal in genau DIESEM Quartal -->
+                            <!--
+                            <form th:action="@{/subgoals/create}" method="post" style="display:flex; gap:8px; align-items:center;">
+                              <input type="text" name="name" placeholder="Neues Subgoal …" required>
+                              <input type="hidden" name="year" th:value="${selectedYear}">
+                              <input type="hidden" name="quarter" th:value="${q}">
+                              <select name="goalId" required>
+                                <option value="" disabled selected>Goal wählen…</option>
+                                <option th:each="g : ${allGoals}" th:value="${g.id}" th:text="${g.name}">Goal</option>
+                              </select>
+                              <button class="btn small" type="submit">+ UA</button>
+                            </form>
+                            -->
+                        </div>
+
+                        <!-- Inhalt: Liste der Subgoals für das Quartal -->
+                        <div th:with="subs=${quarterSubGoals[q]}">
+                            <ul class="items" th:if="${subs != null and !#lists.isEmpty(subs)}" style="margin-top:6px;">
+                                <li class="item" th:each="sg : ${subs}">
+                                    <input type="checkbox" th:checked="${sg.done}" disabled>
+                                    <span>
+                                      <strong th:text="${sg.name}">Subgoal</strong>
+                                      <span class="muted" th:if="${sg.goal != null}"> — [[${sg.goal.name}]]</span>
+                                      <span class="muted" th:if="${sg.month != null}"> — [[${monthLabels[sg.month.name()]}]]</span>
+                                    </span>
+                                    <!-- Optional: Aktionen -->
+                                    <!--
+                                    <form th:action="@{/subgoals/delete/{id}(id=${sg.id})}" method="post">
+                                      <input type="hidden" name="year" th:value="${selectedYear}">
+                                      <button class="btn small danger" type="submit">✕</button>
+                                    </form>
+                                    -->
+                                </li>
+                            </ul>
+
+                            <p class="muted" th:if="${subs == null or #lists.isEmpty(subs)}" style="margin:6px 0 0;">
+                                Keine Subgoals für dieses Quartal.
+                            </p>
+                        </div>
+                    </div>
+                </td>
             </tr>
 
             <tr>

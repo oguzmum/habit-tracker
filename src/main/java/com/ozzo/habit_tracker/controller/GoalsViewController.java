@@ -95,8 +95,8 @@ public class GoalsViewController {
 
         Map<Quarter, List<SubGoal>> byQuarter = subGoalService.groupByQuarter(selectedYear);
 
-        Map<String, List<SubGoal>> quarterSubGoals = new HashMap<>();
-        byQuarter.forEach((q, list) -> quarterSubGoals.put(q.name(), list));
+        Map<Quarter, List<SubGoal>> quarterSubGoals = new HashMap<>();
+        byQuarter.forEach((q, list) -> quarterSubGoals.put(q, list));
 
         Map<Month, List<SubGoal>> monthSubGoals = subGoalService.groupByMonth(selectedYear);
 
