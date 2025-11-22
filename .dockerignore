@@ -5,3 +5,4 @@ Docker/docker-compose.yml
 *.md
 **/.idea
 **/.vscode
+/uploads

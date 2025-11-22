@@ -48,7 +48,8 @@ public class SecurityConfig {
             throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login", "/styles/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/login", "/styles/**", "/js/**", "/images/**", "/uploaded-images/**")
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
