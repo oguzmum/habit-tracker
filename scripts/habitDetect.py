@@ -341,5 +341,5 @@ if __name__ == "__main__":
     cells = extract_cells(xs, ys, header_rows=header_rows, header_cols=header_cols, margin=margin)
     matrix, _ = detect_crosses(gray, binary, img, cells)
 
-    # print(json.dumps({"matrix": matrix}))
-    print_matrix_formatted(matrix)
+    print(json.dumps({"matrix": matrix}))
+    # print_matrix_formatted(matrix)
