@@ -6,6 +6,7 @@ import com.ozzo.habit_tracker.repository.HabitEntryRepository;
 import com.ozzo.habit_tracker.repository.HabitRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,6 +27,14 @@ public class HabitService {
 
 
     public List<Habit> findAll() {
+        return habitRepository.findAll();
+    }
+
+    //TODO have to implement this function with a specific order that is returned
+    // that specific order has to match the order represented in the real habittracker
+    // maybe use a template that needs to be created beforehand, or us the priority of the habits..?
+    // alternative is to use OCR, but for now I'll be ok with a predefined order
+    public List<Habit> findHabitsByPredefinedOrderForImageProcessedTable() {
         return habitRepository.findAll();
     }
 

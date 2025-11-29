@@ -75,4 +75,9 @@ public class UploadedImageService {
     public List<UploadedImage> listUploads() {
         return uploadedImageRepository.findAll(Sort.by(Sort.Direction.DESC, "uploadedAt"));
     }
+
+    public UploadedImage getById(Long id) {
+        return uploadedImageRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Uploaded image not found: " + id));
+    }
 }
