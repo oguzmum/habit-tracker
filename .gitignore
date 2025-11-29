@@ -5,6 +5,12 @@ target/
 !**/src/test/**/target/
 patches/
 /uploads
+**/test/**/imageprocessing/
+
+*.venv*
+/scripts/outputs
+
+
 
 ### STS ###
 .apt_generated
