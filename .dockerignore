@@ -6,3 +6,11 @@ Docker/docker-compose.yml
 **/.idea
 **/.vscode
 /uploads
+
+
+scripts/__pycache__/
+scripts/*.ipynb
+scripts/outputs/
+scripts/debug_output.txt
+scripts/.venv*/
+.DS_Store

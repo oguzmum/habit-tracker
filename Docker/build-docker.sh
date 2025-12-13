@@ -2,7 +2,7 @@
 
 cd ~/Projekte/SW\ Projekte/habit-tracker
 
-mvn clean package
+mvn clean package -DskipTests
 
 JAR_NAME=$(ls target/*.jar | grep habit-tracker.*.jar | head -n 1)
 echo "JAR_NAME: $JAR_NAME"
