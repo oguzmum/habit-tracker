@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import pyheif
 from PIL import Image
-import matplotlib.pyplot as plt
 from pathlib import Path
 import sys
 import json
