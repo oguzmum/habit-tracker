@@ -20,6 +20,8 @@ public class Habit {
     private String name;
 
     private Integer priority;
+    @Column(name = "sort_order")
+    private Integer sortOrder;
     private String description;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -64,6 +66,9 @@ public class Habit {
 
     public Integer getPriority() { return priority; }
     public void setPriority(Integer priority) { this.priority = priority; }
+
+    public Integer getSortOrder() { return sortOrder; }
+    public void setSortOrder(Integer sortOrder) { this.sortOrder = sortOrder; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }

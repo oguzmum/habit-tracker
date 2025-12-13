@@ -47,6 +47,12 @@ public class HabitViewController {
         return "index";
     }
 
+    @PostMapping("/habits/{id}/move")
+    public String moveHabit(@PathVariable Long id, @RequestParam String direction) {
+        habitService.moveHabit(id, direction);
+        return "redirect:/habits";
+    }
+
     @GetMapping("/habits/new-page")
     public String showNewHabitForm(Model model) {
         //new Habit that will created with parameters as its being defined by the user in the UI :D

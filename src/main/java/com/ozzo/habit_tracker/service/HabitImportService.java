@@ -51,7 +51,7 @@ public class HabitImportService {
         }
 
         List<List<Boolean>> detectedMatrix = pythonExecutor.detectHabits(Path.of(uploadedImage.getStoragePath()));
-        List<Habit> orderedHabits = habitService.findHabitsByPredefinedOrderForImageProcessedTable();
+        List<Habit> orderedHabits = habitService.findAll();
         int daysInMonth = targetMonth.lengthOfMonth();
 
         List<HabitImportRow> rows = new ArrayList<>();

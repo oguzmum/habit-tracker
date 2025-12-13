@@ -27,15 +27,7 @@ public class HabitService {
 
 
     public List<Habit> findAll() {
-        return habitRepository.findAll();
-    }
-
-    //TODO have to implement this function with a specific order that is returned
-    // that specific order has to match the order represented in the real habittracker
-    // maybe use a template that needs to be created beforehand, or us the priority of the habits..?
-    // alternative is to use OCR, but for now I'll be ok with a predefined order
-    public List<Habit> findHabitsByPredefinedOrderForImageProcessedTable() {
-        return habitRepository.findAll();
+        return habitRepository.findAll(defaultSort());
     }
 
     public Habit findById(long id) {
@@ -46,7 +38,7 @@ public class HabitService {
     public void add(Habit habit) {
         //insert into Db is done via the save function
         // also comes default with the JpaRepository :D
-        habitRepository.save(habit);
+        save(habit);
     }
 
     public void markHabitAsDone(Long id, LocalDate date){
@@ -88,7 +80,55 @@ public class HabitService {
     }
 
     public Habit save(Habit habit){
+        if (habit.getSortOrder() == null) {
+            habit.setSortOrder(nextSortOrderNumber());
+        }
         return habitRepository.save(habit);
+    }
+
+    public void moveHabit(Long habitId, String direction) {
+        int delta = switch (direction) {
+            case "up" -> -1;
+            case "down" -> 1;
+            default -> 0;
+        };
+
+        if (delta == 0) {
+            return;
+        }
+
+        List<Habit> orderedHabits = findAll();
+        int index = -1;
+        for (int i = 0; i < orderedHabits.size(); i++) {
+            if (orderedHabits.get(i).getId().equals(habitId)) {
+                index = i;
+                break;
+            }
+        }
+
+        int swapIndex = index + delta;
+        if (index < 0 || swapIndex < 0 || swapIndex >= orderedHabits.size()) {
+            return;
+        }
+
+        Habit current = orderedHabits.get(index);
+        Habit target = orderedHabits.get(swapIndex);
+
+        Integer currentOrder = current.getSortOrder();
+        current.setSortOrder(target.getSortOrder());
+        target.setSortOrder(currentOrder);
+
+        habitRepository.save(current);
+        habitRepository.save(target);
+    }
+
+    private Sort defaultSort() {
+        return Sort.by(Sort.Order.asc("sortOrder"), Sort.Order.asc("id"));
+    }
+
+    private int nextSortOrderNumber() {
+        Integer max = habitRepository.findMaxSortOrder();
+        return (max == null ? 0 : max) + 1;
     }
 
     public void deleteById(Long id){

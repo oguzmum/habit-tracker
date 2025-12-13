@@ -2,6 +2,7 @@ package com.ozzo.habit_tracker.repository;
 
 import com.ozzo.habit_tracker.entity.Habit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -12,4 +13,7 @@ public interface HabitRepository extends JpaRepository<Habit, Long> {
 
     // for the import functionality - searching by the name
     Optional<Habit> findByNameIgnoreCase(String name);
+
+    @Query("SELECT MAX(h.sortOrder) FROM Habit h")
+    Integer findMaxSortOrder();
 }

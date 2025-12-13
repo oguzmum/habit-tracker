@@ -1,12 +1,26 @@
 <div th:fragment="content">
     <h2>All Habits</h2>
+    <h5>
+        The arrows next to the Edit button let you define the order of your habits.
+        This order should match the layout of your analog habit tracker.<br/>
+        When using the image processing functionality, habit entries will be created in this order.
+    </h5>
 
     <ul class="list-unstyled mt-4">
         <li th:each="h, stat : ${habits}" class="mb-2 d-flex align-items-center">
 
+            <span class="badge text-bg-secondary me-2" th:text="${stat.index + 1}"></span>
             <a th:href="@{/habits/{id}(id=${h.id})}" th:text="${h.name}" class="btn btn-link p-0"></a>
             <a th:href="@{/habits/{id}/edit(id=${h.id})}" class="btn btn-sm btn-outline-primary ms-2">Edit</a>
 
+            <form th:action="@{/habits/{id}/move(id=${h.id})}" method="post" class="m-0 ms-2">
+                <input type="hidden" name="direction" value="up" />
+                <button type="submit" class="btn btn-outline-secondary btn-sm" th:disabled="${stat.index == 0}">↑</button>
+            </form>
+            <form th:action="@{/habits/{id}/move(id=${h.id})}" method="post" class="m-0 ms-1">
+                <input type="hidden" name="direction" value="down" />
+                <button type="submit" class="btn btn-outline-secondary btn-sm" th:disabled="${stat.index == stat.size - 1}">↓</button>
+            </form>
 
             <form th:action="@{/habits/delete/{id}(id=${h.id})}"
                   method="post"
